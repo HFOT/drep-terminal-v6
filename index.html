@@ -16,31 +16,73 @@
 
 /* ── 起動スプラッシュ ──
    最初の 1 フレームから暗い画面を出し、実データが載るまでを見せる。
-   進捗は演出ではなく実際の読み込み段階に紐づけてある。 */
-#boot{position:fixed;inset:0;z-index:99999;background:#0b0c0f;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
-  transition:opacity .45s ease, visibility .45s ease;}
+   マークは線画で描き起こし、最後に中心へ収束する。
+   進捗バーは演出ではなく実際の読み込み段階に紐づけてある。 */
+#boot{position:fixed;inset:0;z-index:99999;background:#08090c;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .5s ease, visibility .5s ease;overflow:hidden;}
 #boot.gone{opacity:0;visibility:hidden;pointer-events:none;}
-#boot .bt-mark{opacity:0;transform:translateY(6px);animation:btIn .5s .05s ease forwards;}
-#boot .bt-word{margin-top:16px;font-family:Inter,system-ui,sans-serif;font-size:19px;
-  font-weight:600;letter-spacing:-0.3px;color:#e8eaed;opacity:0;
-  animation:btIn .5s .16s ease forwards;}
-#boot .bt-sub{margin-top:7px;font-family:'IBM Plex Mono',monospace;font-size:10px;
-  letter-spacing:.16em;text-transform:uppercase;color:#5c6470;opacity:0;
-  animation:btIn .5s .26s ease forwards;}
-#boot .bt-track{margin-top:26px;width:196px;height:2px;border-radius:2px;
+#boot::before{content:'';position:absolute;width:820px;height:820px;border-radius:50%;
+  background:radial-gradient(circle,rgba(48,196,106,.10) 0%,rgba(48,196,106,.03) 38%,transparent 68%);
+  opacity:0;animation:btGlow 1.6s .2s ease forwards;pointer-events:none;}
+@keyframes btGlow{to{opacity:1;}}
+
+#boot .bt-mark{position:relative;width:132px;height:132px;}
+#boot .bt-mark svg{width:100%;height:100%;overflow:visible;}
+#boot .bt-stem,#boot .bt-arc1,#boot .bt-arc2{
+  fill:none;stroke:#30c46a;stroke-linecap:round;}
+#boot .bt-stem{stroke-width:5;stroke-dasharray:40;stroke-dashoffset:40;
+  animation:btDraw .55s .15s cubic-bezier(.6,0,.3,1) forwards;}
+#boot .bt-arc1{stroke-width:5;stroke-dasharray:64;stroke-dashoffset:64;
+  animation:btDraw .85s .38s cubic-bezier(.6,0,.3,1) forwards;}
+#boot .bt-arc2{stroke-width:4;stroke-dasharray:33;stroke-dashoffset:33;opacity:.5;
+  animation:btDraw .7s .72s cubic-bezier(.6,0,.3,1) forwards;}
+@keyframes btDraw{to{stroke-dashoffset:0;}}
+
+#boot .bt-dot{fill:#4fe0a0;transform-origin:24px 32px;transform:scale(0);
+  animation:btPop .5s 1.12s cubic-bezier(.2,1.5,.4,1) forwards;}
+@keyframes btPop{to{transform:scale(1);}}
+
+/* 収束する波紋: 外から中心へ吸い込まれる */
+#boot .bt-ring{fill:none;stroke:#30c46a;stroke-width:1.4;transform-origin:24px 32px;
+  opacity:0;animation:btRipple 2.4s linear 1.35s infinite;}
+#boot .bt-ring.r2{animation-delay:2.15s;}
+@keyframes btRipple{
+  0%{transform:scale(6);opacity:0;}
+  22%{opacity:.42;}
+  100%{transform:scale(1);opacity:0;}
+}
+
+#boot .bt-word{margin-top:26px;font-family:Inter,system-ui,sans-serif;font-size:30px;
+  font-weight:700;color:#eef1f4;opacity:0;letter-spacing:.22em;
+  animation:btWord .9s .95s cubic-bezier(.2,.9,.3,1) forwards;}
+@keyframes btWord{from{opacity:0;letter-spacing:.34em;transform:translateY(8px);}
+  to{opacity:1;letter-spacing:-.4px;transform:none;}}
+#boot .bt-sub{margin-top:11px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;
+  letter-spacing:.34em;text-transform:uppercase;color:#5d6673;opacity:0;
+  animation:btIn .7s 1.3s ease forwards;}
+#boot .bt-track{margin-top:38px;width:260px;height:2px;border-radius:2px;
   background:rgba(255,255,255,.07);overflow:hidden;opacity:0;
-  animation:btIn .5s .34s ease forwards;}
-#boot .bt-fill{height:100%;width:8%;border-radius:2px;
+  animation:btIn .6s 1.45s ease forwards;}
+#boot .bt-fill{height:100%;width:6%;border-radius:2px;
   background:linear-gradient(90deg,#30c46a,#4fe0a0);
-  transition:width .5s cubic-bezier(.22,.9,.3,1);}
-#boot .bt-status{margin-top:12px;height:12px;font-family:'IBM Plex Mono',monospace;
-  font-size:9.5px;letter-spacing:.06em;color:#4b535e;opacity:0;
-  animation:btIn .5s .34s ease forwards;}
-@keyframes btIn{to{opacity:1;transform:none;}}
+  box-shadow:0 0 12px rgba(79,224,160,.5);
+  transition:width .55s cubic-bezier(.22,.9,.3,1);}
+#boot .bt-status{margin-top:14px;height:13px;font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;letter-spacing:.14em;color:#4d5661;opacity:0;
+  animation:btIn .6s 1.45s ease forwards;}
+@keyframes btIn{to{opacity:1;}}
+
+@media (max-width:560px){
+  #boot .bt-mark{width:92px;height:92px;}
+  #boot .bt-word{font-size:22px;margin-top:20px;}
+  #boot .bt-track{width:200px;margin-top:28px;}
+}
 @media (prefers-reduced-motion:reduce){
-  #boot .bt-mark,#boot .bt-word,#boot .bt-sub,#boot .bt-track,#boot .bt-status{
-    animation:none;opacity:1;transform:none;}
+  #boot::before,#boot .bt-word,#boot .bt-sub,#boot .bt-track,#boot .bt-status,#boot .bt-dot{
+    animation:none;opacity:1;transform:none;letter-spacing:-.4px;}
+  #boot .bt-stem,#boot .bt-arc1,#boot .bt-arc2{animation:none;stroke-dashoffset:0;}
+  #boot .bt-ring{animation:none;opacity:0;}
   #boot .bt-fill{transition:none;}
 }
 
@@ -713,7 +755,22 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 </style>
 </head>
 <body>
-<div id="boot"><div class="bt-mark"><svg width="46" height="46" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="5.6" y="5" width="3.4" height="22" rx="1.7" fill="#30c46a"/><path d="M11.6 5.4 A11.2 11.2 0 0 1 11.6 26.6" stroke="#30c46a" stroke-width="3.4" stroke-linecap="round"/><path d="M11.6 10.4 A5.9 5.9 0 0 1 11.6 21.6" stroke="#30c46a" stroke-width="2.8" stroke-linecap="round" opacity="0.55"/><circle cx="12.1" cy="16" r="1.9" fill="#30c46a"/></svg></div><div class="bt-word">DRep Terminal</div><div class="bt-sub">Cardano Governance</div><div class="bt-track"><div class="bt-fill" id="bootFill"></div></div><div class="bt-status" id="bootStatus">starting</div></div>
+<div id="boot">
+  <div class="bt-mark">
+    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle class="bt-ring"    cx="24" cy="32" r="3.4"/>
+      <circle class="bt-ring r2" cx="24" cy="32" r="3.4"/>
+      <line class="bt-stem" x1="14" y1="12" x2="14" y2="52"/>
+      <path class="bt-arc1" d="M17 12 A20 20 0 0 1 17 52"/>
+      <path class="bt-arc2" d="M17 22 A10 10 0 0 1 17 42"/>
+      <circle class="bt-dot" cx="24" cy="32" r="3.4"/>
+    </svg>
+  </div>
+  <div class="bt-word">DRep Terminal</div>
+  <div class="bt-sub">Cardano Governance</div>
+  <div class="bt-track"><div class="bt-fill" id="bootFill"></div></div>
+  <div class="bt-status" id="bootStatus">starting</div>
+</div>
 
 <!-- HEADER — Aurora Topbar -->
 <nav class="nav">
@@ -941,28 +998,36 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 
 <script>
 /* 起動スプラッシュの進捗。演出ではなく実際の段階を出す。
-   万一どこかで固まっても閉じられるよう、上限時間で必ず消す。 */
+   ただし描き起こしのアニメーションが途中で切れると見苦しいので、
+   最低表示時間だけは設けてある。何があっても上限時間で必ず閉じる。 */
 (function(){
   var el = document.getElementById('boot');
   if(!el) return;
   var fill = document.getElementById('bootFill');
   var st   = document.getElementById('bootStatus');
-  var done = false;
+  var t0   = Date.now();
+  var MIN_MS = 1900;   // 線画が描き終わるまで
+  var done = false, closing = false;
+
   window.bootStep = function(pct, msg){
     if(done) return;
     if(fill && pct != null) fill.style.width = Math.max(0, Math.min(100, pct)) + '%';
     if(st && msg) st.textContent = msg;
   };
   window.bootDone = function(msg){
-    if(done) return;
-    done = true;
+    if(closing) return;
+    closing = true;
     if(fill) fill.style.width = '100%';
     if(st && msg) st.textContent = msg;
-    setTimeout(function(){ el.classList.add('gone'); }, 260);
-    setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 900);
+    var wait = Math.max(0, MIN_MS - (Date.now() - t0));
+    setTimeout(function(){
+      done = true;
+      el.classList.add('gone');
+      setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 700);
+    }, wait);
   };
-  // 保険: 何があっても 7 秒で閉じる
-  setTimeout(function(){ window.bootDone(); }, 7000);
+  // 保険: 何があっても 8 秒で閉じる
+  setTimeout(function(){ window.bootDone(); }, 8000);
 })();
 </script>
 <script>
