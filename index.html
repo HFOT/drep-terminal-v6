@@ -3155,14 +3155,18 @@ function renderCatalystPanel(drepId){
 // 当方の主観であってオンチェーンの事実ではない。公開ページで
 // 名指しで出すものではないため、CIGNAL OS 内 (Tauri) と
 // ローカル確認時に限って表示する。
-// 企業 / 個人 といった分類を出してよいか。
+// 企業 / 個人 といった分類を出してよいか。→ 出さない。
 //
 // この分類はチェーン上に無く、こちらで手作業で付けた値。370 件中
-// 45 件しか付いておらず、残りは「不明」。ある DRep を「企業」と
-// 名指しするだけの裏付けが無いので、公開版では分類そのものを出さない。
-// (フィルタ、行バッジ、アイコン、マップの色分けを含む)
+// 45 件しか付いておらず残りは「不明」で、ある DRep を「企業」と
+// 名指しするだけの裏付けが無い。裏付けの無い分類は公開版だけでなく
+// 手元で見るときも誤りなので、環境を問わず表示しない。
+// (フィルタ、行バッジ、アイコン、マップの色分け、凡例を含む)
+//
+// 出典のある分類データを持てたときは、ここを true に戻せば
+// 表示側は元に戻る。判定を 1 箇所に閉じてあるのはそのため。
 function _showCategories(){
-  return _showDrepDataPanel();
+  return false;
 }
 
 function _showDrepDataPanel(){
@@ -3586,7 +3590,9 @@ function renderRightCol(){
     hd += '<span style="font-size:9px;color:var(--text3)">VP <span style="color:'+shareColor+';font-weight:700;font-family:IBM Plex Mono,monospace">'+myVP.toFixed(1)+'M₳</span></span>';
     hd += '<span style="font-size:9px;color:var(--text3)">ランク <span style="color:var(--text2);font-weight:700">#'+(rankIdx+1)+'位</span></span>';
     hd += '<span style="font-size:9px;color:var(--text3)">占有率 <span style="color:'+shareColor+';font-weight:700">'+shareStr+'</span></span>';
-    hd += '<span style="font-size:9px;color:var(--text3)">カテゴリ <span style="color:var(--text2)">'+sel.category+'</span></span>';
+    if(_showCategories()){
+      hd += '<span style="font-size:9px;color:var(--text3)">カテゴリ <span style="color:var(--text2)">'+sel.category+'</span></span>';
+    }
     hd += '</div>';
     hd += '</div>';
 
