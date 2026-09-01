@@ -732,7 +732,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
     <div class="mp-x" onclick="toggleMP()">✕</div>
   </div>
   <div class="mp-srch"><input type="text" id="mpQ" placeholder="DRep..." oninput="renderMP()"></div>
-  <div class="mp-cats">
+  <div class="mp-cats" id="mpCats">
     <button class="mpcat a" onclick="filterCat(this,'all')" data-i18n="cat.all">全て</button>
     <button class="mpcat" onclick="filterCat(this,'企業・機関')" data-i18n="cat.org">企業・機関</button>
     <button class="mpcat" onclick="filterCat(this,'個人(日本)')" data-i18n="cat.jp">個人(JP)</button>
@@ -844,7 +844,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
     <div class="map-panel" id="treemapPanel">
       <div class="delta-panel-title" data-i18n="map.areaTitle">DRep Area Map — VP規模</div>
       <div class="treemap-wrap" style="flex:1"><canvas id="tmCanvas"></canvas></div>
-      <div class="hm-legend">
+      <div class="hm-legend" id="hmLegendCat">
         <div class="hm-leg-dot" style="background:#ff453a"></div><span class="hm-leg-lbl" data-i18n="legend.org">企業・機関</span>
         <div class="hm-leg-dot" style="background:#30c46a"></div><span class="hm-leg-lbl" data-i18n="legend.jp">個人JP</span>
         <div class="hm-leg-dot" style="background:#5b6cff"></div><span class="hm-leg-lbl" data-i18n="legend.intl">個人海外</span>
@@ -989,8 +989,10 @@ var I18N = {
   'epoch.snapshot':  {en:'snapshot',         ja:'スナップショット'},
   'epoch.embedded':  {en:'embedded data',    ja:'埋め込みデータ'},
   'sel.prompt':      {en:'Select a DRep',    ja:'DRepを選択'},
+  'src.priceNote':   {en:'USD figures for past epochs use an approximate price table.',
+                      ja:'過去 epoch の USD 換算は近似の価格表を使用。'},
   'agg.drepCount':   {en:'DReps',            ja:'DRep数'},
-  'agg.delegators':  {en:'Delegators (+)',   ja:'委任者(+)'},
+  'agg.delegators':  {en:'Delegators',       ja:'委任者数'},
   'agg.chgEp':       {en:'Change / epoch',   ja:'変化/Ep'},
   'agg.topvp':       {en:'Top VP',           ja:'TOP VP'},
   'agg.participation':{en:'Participation',   ja:'参加率'},
@@ -1055,6 +1057,16 @@ function toggleLang() {
 }
 
 document.addEventListener('DOMContentLoaded', applyI18n);
+
+// 分類を出さない環境では、分類フィルタと色凡例ごと畳む。
+// 色分けが無いのに凡例だけ残ると読み手を惑わせる。
+document.addEventListener('DOMContentLoaded', function(){
+  if(typeof _showCategories === 'function' && _showCategories()) return;
+  ['mpCats','hmLegendCat'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.style.display = 'none';
+  });
+});
 
 /* ── Theme toggle (Aurora Light/Dark) ── */
 var _isDark = true;
@@ -1401,8 +1413,8 @@ let xDrag={on:false,sx:0,svs:0,sve:0};
 // ============================================================
 // HELPERS
 // ============================================================
-function catEmoji(c){return c==='企業・機関'?'🏢':c==='個人(日本)'?'🇯🇵':c==='個人(海外)'?'🌍':c==='SPO'?'⚙':'❓';}
-function catColor(c){return c==='企業・機関'?'#f59e0b':c==='個人(日本)'?'#34d399':c==='個人(海外)'?'#60a5fa':c==='SPO'?'#a78bfa':'#6b7280';}
+function catEmoji(c){if(!_showCategories())return '◈';return c==='企業・機関'?'🏢':c==='個人(日本)'?'🇯🇵':c==='個人(海外)'?'🌍':c==='SPO'?'⚙':'❓';}
+function catColor(c){if(!_showCategories())return '#7c7ce8';return c==='企業・機関'?'#f59e0b':c==='個人(日本)'?'#34d399':c==='個人(海外)'?'#60a5fa':c==='SPO'?'#a78bfa':'#6b7280';}
 function fv(v){if(v==null)return'—';return v>=100?v.toFixed(1):v.toFixed(2);}
 function fn(n){return n==null?'—':n.toLocaleString();}
 function fTime(ts){
@@ -1536,7 +1548,7 @@ function renderMP(){
           ? '<img class="mpr-icon" src="'+d.image+'" onerror="this.outerHTML=\'<div class=mpr-icon style=background:'+cc+'18;color:'+cc+'>'+catEmoji(d.category)+'</div>\'" style="object-fit:cover">'
           : '<div class="mpr-icon" style="background:'+cc+'18;color:'+cc+'">'+catEmoji(d.category)+'</div>')+
         '<span class="mpr-name">'+d.name+(d.ticker?' <span style="color:var(--text3);font-size:9px;font-weight:400">$'+d.ticker+'</span>':'')+'</span>'+
-        '<span class="mpr-badge" style="background:'+cc+'15;color:'+cc+';border:1px solid '+cc+'28">'+d.category+'</span>'+
+        (_showCategories() ? '<span class="mpr-badge" style="background:'+cc+'15;color:'+cc+';border:1px solid '+cc+'28">'+d.category+'</span>' : '')+
         ((typeof CATALYST_DB!=='undefined'&&CATALYST_DB[d.id])?'<span style="font-size:8px;color:#00b973;background:rgba(0,185,115,.12);border:1px solid rgba(0,185,115,.3);padding:0 4px;border-radius:3px;margin-left:3px">🌱</span>':'')+
       '</div>'+
       '<div class="mpn" style="color:var(--text)">'+(ds.total_ada/1e6).toFixed(1)+'M</div>'+
@@ -1602,7 +1614,9 @@ function updateTicker(){
     dbiEl.textContent=catEmoji(d.category);
   }
   document.getElementById('dbn').innerHTML=d.name+(d.ticker?' <span style="color:var(--accent);font-size:11px;font-weight:400;margin-left:6px">$'+d.ticker+'</span>':'')+' <span id="darr">'+(mpOpen?'▴':'▾')+'</span>';
-  document.getElementById('dbc').textContent=d.category;
+  document.getElementById('dbc').textContent = _showCategories()
+    ? d.category
+    : ('#' + (d.rank||'—') + ' / ' + DREPS.length + ' DReps');
   // VP big
   const vpEl=document.getElementById('tkVP');
   vpEl.textContent=fv(d.latest_vp)+' M₳';
@@ -1644,7 +1658,11 @@ function updateOvTicker(){
   var sorted=DREPS.slice().sort(function(a,b){return(b.latest_vp||0)-(a.latest_vp||0);});
   var topVP=sorted.length?(sorted[0].latest_vp||0):0;
   var adaP=eps.length?getAdaPrice(eps[eps.length-1]):0;
-  var totalDel=Object.keys(DELSTATS).reduce(function(s,id){return s+((DELSTATS[id]&&DELSTATS[id].count)||0);},0);
+  // 委任者数はスナップショットの実数 (全 active DRep の live_delegator_count 合計) を使う。
+  // DELSTATS は取得できた DRep のぶんしか無く、下限値にしかならない。
+  var _snapDel = (SNAP_TOTALS && SNAP_TOTALS.named_delegators) || 0;
+  var totalDel = _snapDel || Object.keys(DELSTATS).reduce(function(s,id){return s+((DELSTATS[id]&&DELSTATS[id].count)||0);},0);
+  var _delExact = !!_snapDel;
 
   // アイコン / 名前
   var dbiEl=document.getElementById('dbi');
@@ -1679,7 +1697,7 @@ function updateOvTicker(){
 
   // 値セット
   document.getElementById('tkR').textContent=activeCnt+t('unit.count');
-  document.getElementById('tkD').textContent=totalDel>0?fn(totalDel)+'+':'—';
+  document.getElementById('tkD').textContent = totalDel>0 ? (fn(totalDel)+(_delExact?'':'+')) : '—';
   var ceEl=document.getElementById('tkC');
   ceEl.textContent=(chgPct>=0?'+':'')+chgPct.toFixed(2)+'%';
   ceEl.className='tsv '+(chgPct>0?'up':chgPct<0?'dn':'');
@@ -2211,6 +2229,14 @@ function renderOvSource(){
     : t('src.notLoaded');
   el.appendChild(l4);
 
+  if(SNAP_TOTALS && SNAP_TOTALS.ada_usd){
+    var lp = document.createElement('div');
+    lp.style.cssText = 'margin-top:4px;color:var(--text3)';
+    lp.textContent = 'ADA/USD $' + SNAP_TOTALS.ada_usd
+      + (SNAP_TOTALS.ada_usd_source ? ' (' + SNAP_TOTALS.ada_usd_source + ')' : '')
+      + ' \u2014 ' + t('src.priceNote');
+    el.appendChild(lp);
+  }
   var l5 = document.createElement('div');
   l5.style.cssText = 'margin-top:4px;color:var(--text4)';
   l5.textContent = t('src.meta');
@@ -3129,6 +3155,16 @@ function renderCatalystPanel(drepId){
 // 当方の主観であってオンチェーンの事実ではない。公開ページで
 // 名指しで出すものではないため、CIGNAL OS 内 (Tauri) と
 // ローカル確認時に限って表示する。
+// 企業 / 個人 といった分類を出してよいか。
+//
+// この分類はチェーン上に無く、こちらで手作業で付けた値。370 件中
+// 45 件しか付いておらず、残りは「不明」。ある DRep を「企業」と
+// 名指しするだけの裏付けが無いので、公開版では分類そのものを出さない。
+// (フィルタ、行バッジ、アイコン、マップの色分けを含む)
+function _showCategories(){
+  return _showDrepDataPanel();
+}
+
 function _showDrepDataPanel(){
   try {
     if(window.__TAURI__) return true;
@@ -5595,6 +5631,14 @@ async function loadSnapshot(){
   snap.dreps.forEach(function(d){ DREPS.push(d); });
   // 総量は描画より前に確定させる。後回しにすると Nakamoto 係数などが読み込めた分だけを分母にしてしまう。
   SNAP_TOTALS = snap.totals || null;
+  // ADA 価格。ページ内の ADA_PRICE_SPARSE は過去分の近似表で、
+  // 末尾 (epoch 633 / 0.39) で止まっていたため現在の epoch でも
+  // その値を返し、実勢の倍近くを表示していた。
+  // スナップショットで取った実価格を最新点として差し込む。
+  if(SNAP_TOTALS && SNAP_TOTALS.ada_usd && typeof ADA_PRICE_SPARSE !== 'undefined'){
+    ADA_PRICE_SPARSE[String(snapLast)] = SNAP_TOTALS.ada_usd;
+    ADA_PRICE_SPARSE[snapLast] = SNAP_TOTALS.ada_usd;
+  }
   SNAP_META   = { source: snap.source || null, generated_at: snap.generated_at || '', epoch: snapLast };
   if(SNAP_TOTALS){
     // 実行時に Koios を叩けない環境 (静的ホスティング) でも参加率を正しく出す

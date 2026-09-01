@@ -118,6 +118,42 @@ def make_ticker(name):
     return ''.join(w[0] for w in words).upper()[:6]
 
 
+def fetch_ada_usd():
+    """ADA/USD をいくつかの公開エンドポイントから取る。
+
+    サーバ側で叩くので CORS は関係ない。1 つが落ちても止まらないよう
+    順に試す。CoinGecko は無料枠のレート制限が厳しく 429 を返しやすいので
+    最後に置いてある。
+    """
+    def kraken():
+        d = api('https://api.kraken.com/0/public/Ticker?pair=ADAUSD', tries=2, timeout=25)
+        return float(d['result']['ADAUSD']['c'][0])
+
+    def coinbase():
+        d = api('https://api.coinbase.com/v2/prices/ADA-USD/spot', tries=2, timeout=25)
+        return float(d['data']['amount'])
+
+    def binance():
+        d = api('https://api.binance.com/api/v3/ticker/price?symbol=ADAUSDT', tries=2, timeout=25)
+        return float(d['price'])
+
+    def coingecko():
+        d = api('https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd',
+                tries=2, timeout=25)
+        return float(d['cardano']['usd'])
+
+    for name, fn in (('kraken', kraken), ('coinbase', coinbase),
+                     ('binance', binance), ('coingecko', coingecko)):
+        try:
+            v = fn()
+            if v and v > 0:
+                log('ada price: %.6f USD (%s)' % (v, name))
+                return round(v, 6), name
+        except Exception as e:
+            log('  ! ada price via %s failed: %r' % (name, e))
+    return None, None
+
+
 def main():
     curated = {}
     if os.path.exists(CURATED):
@@ -193,6 +229,16 @@ def main():
     tt = api(KOIOS + '/totals?_epoch_no=%d' % epoch)
     if tt and tt[0].get('circulation'):
         totals['circulation_m'] = lovelace_to_m(tt[0]['circulation'])
+    named_del = sum((d.get('delegators') or 0) for d in top)
+    totals['named_delegators'] = named_del
+    if totals.get('abstain_delegators') is not None:
+        totals['total_delegators'] = (named_del
+                                      + (totals.get('abstain_delegators') or 0)
+                                      + (totals.get('no_confidence_delegators') or 0))
+    ada_usd, ada_src = fetch_ada_usd()
+    if ada_usd:
+        totals['ada_usd'] = ada_usd
+        totals['ada_usd_source'] = ada_src
     log('totals: ' + json.dumps(totals))
 
     epochs = [str(e) for e in range(epoch - EPOCH_WINDOW + 1, epoch + 1)]
