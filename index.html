@@ -1006,7 +1006,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
   var fill = document.getElementById('bootFill');
   var st   = document.getElementById('bootStatus');
   var t0   = Date.now();
-  var MIN_MS = 1900;   // 線画が描き終わるまで
+  var MIN_MS = 2700;   // 線画が描き終わり、少し余韻を持たせてから閉じる
   var done = false, closing = false;
 
   window.bootStep = function(pct, msg){
