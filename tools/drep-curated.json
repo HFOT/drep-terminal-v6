@@ -1,0 +1,302 @@
+{
+ "drep1y20fpc0f6qjl4edtl9cxzrvqzd8jkzr6ja7p0p2n7cxragqkurae3": {
+  "category": "個人(海外)",
+  "name": "Peyton",
+  "name_ja": "ペイトン",
+  "ticker": "PEYTON"
+ },
+ "drep1y2200we9c904un36tzaearntzzl63snffuul9qsk0te4utqfkke0w": {
+  "category": "個人(日本)",
+  "name": "YUTA",
+  "name_ja": "ユウタ",
+  "ticker": "YUTA"
+ },
+ "drep1y25xtvu3d0gaf6cxktr9pkfgnywmqsh4fum93s8m3hlp4aqj3uqdp": {
+  "category": "個人(海外)",
+  "name": "Chris-O",
+  "name_ja": "クリス・O",
+  "ticker": "CHRIO"
+ },
+ "drep1y29h2q6cst2pvkl2sqqvf5ljcy36uv7pmy482xnczddzgqshus24w": {
+  "category": "企業・機関",
+  "name": "Eternl DRep Committee",
+  "name_ja": "永遠のDRep委員会",
+  "ticker": "ETERNL"
+ },
+ "drep1y2anuetphncrua2ya46uwgw0rwkyzxr7jll0rv9259u0zvgrh3ng2": {
+  "category": "個人(海外)",
+  "name": "Ryan Jones_Maestroman",
+  "name_ja": "ライアン・ジョーンズ_マエストロマン",
+  "ticker": "MSTRO"
+ },
+ "drep1y2csyxt7u2hl4674pl9cef5lknafaw5nraxvyx033kmd0es3awuv0": {
+  "category": "個人(海外)",
+  "name": "Sebastien Guillemot セバ",
+  "name_ja": "セバスチャン・ギルモ セバ",
+  "ticker": "SEBA"
+ },
+ "drep1y2eu92qwy875nlslg3ahlh0hy5vhzpkrjay88ptvdp0z6cqm9h25x": {
+  "category": "企業・機関",
+  "name": "Tempo.Vote",
+  "name_ja": "テンポ.投票",
+  "ticker": "TEMPO"
+ },
+ "drep1y2m0g4r66pyaw3p7u454wc0p4f0ygm8ueaev0mgd3tvwm7sskqwqp": {
+  "category": "個人(海外)",
+  "name": "CardanoYoda",
+  "name_ja": "カルダノヨーダ",
+  "ticker": "YODA"
+ },
+ "drep1y2nvdau7g7xt6dlh9wydy9c4fvve24rr67twf5w63axu56q4rypfz": {
+  "category": "企業・機関",
+  "name": "Blockdaemon",
+  "name_ja": "ブロックデーモン",
+  "ticker": "BLKD"
+ },
+ "drep1y2pyv5v96qle0xp35fhlv2wwjudx8y2e0dcpvktj2xfr8ugdnlh4q": {
+  "category": "個人(海外)",
+  "name": "Micah",
+  "name_ja": "ミカ",
+  "ticker": "MICAH"
+ },
+ "drep1y2qj5ckynuhrgzsh9mwucxmnw620ugaw74e89d4kglugv3snnf2zj": {
+  "category": "個人(海外)",
+  "name": "EDEN",
+  "name_ja": "エデン",
+  "ticker": "EDEN"
+ },
+ "drep1y2rtf58m0lv9spcqx5mads20gpfulf6l97w57ecdy00vjdq0klh4l": {
+  "category": "個人(海外)",
+  "name": "Dumpling🥟",
+  "name_ja": "餃子🥟",
+  "ticker": "DMPL"
+ },
+ "drep1y2vyrqh0fa4qh4tmy7322va6ryk78uh6szppezaft0watyqp5hdwx": {
+  "category": "企業・機関",
+  "name": "BTBF_XSP",
+  "name_ja": "BTBF_XSP",
+  "ticker": "BTBF"
+ },
+ "drep1y2xacakh0g8q4exfgmvywy62an74cj7ejcpcrgq6vh4dckqhtsyh5": {
+  "category": "個人(日本)",
+  "name": "Aichi/Tokai_DRep",
+  "name_ja": "愛知/東海_DRep",
+  "ticker": "AICHI"
+ },
+ "drep1ydpfkyjxzeqvalf6fgvj7lznrk8kcmfnvy9hyl6gr6ez6wgsjaelx": {
+  "category": "企業・機関",
+  "name": "Cardano Foundation",
+  "name_ja": "カルダノ財団",
+  "ticker": "CF"
+ },
+ "drep1yf2jzhuc4f7eu2yay9d9ta3dykxxcwn34wz8kak7nhd7vcgrxn7ns": {
+  "category": "企業・機関",
+  "name": "HOSKY",
+  "name_ja": "ホスキー",
+  "ticker": "HOSKY"
+ },
+ "drep1yfaaaaa270yjt6tu5skndugekprf5ykv5jshanl0c6gqx5qpstskf": {
+  "category": "企業・機関",
+  "name": "Drep One",
+  "name_ja": "ドレップワン",
+  "ticker": "DREP1"
+ },
+ "drep1yfe9en4hsgc3r6nhtmwjeljh06hgnvt9yzzkwqcftvdj34cdxdg7u": {
+  "category": "企業・機関",
+  "name": "AdaStat",
+  "name_ja": "アダスタット",
+  "ticker": "ASTAT"
+ },
+ "drep1yfemdmjmxr59kecgqnzd8d0ankkue4rdnn35c8qfsuljt9cjree5m": {
+  "category": "企業・機関",
+  "name": "PoolTool",
+  "name_ja": "プールツール",
+  "ticker": "PTOOL"
+ },
+ "drep1yffcjs0njfea09xhs6up429rhya5pxd7qz7hvmwq6vqy2nczwpj3g": {
+  "category": "企業・機関",
+  "name": "Big Lazy Cat",
+  "name_ja": "大きな怠け猫",
+  "ticker": "BLC"
+ },
+ "drep1yffld2866p00cyg3ejjdewtvazgah7jjgk0s9m7m5ytmmdq33v3zh": {
+  "category": "企業・機関",
+  "name": "SIPO",
+  "name_ja": "SIPO",
+  "ticker": "SIPO"
+ },
+ "drep1yfnuetvunwfl83qaq4e7vlg5w8dwwjmtt4j6tr9fegqvgmgtq5scg": {
+  "category": "不明",
+  "name": "Unknown",
+  "name_ja": "未知",
+  "ticker": ""
+ },
+ "drep1yftc8zs7gjcj4a9nxzplz4wg6cwweya0kxp8adnw59vsyrqvrysud": {
+  "category": "個人(海外)",
+  "name": "Peter Bui",
+  "name_ja": "ピーター・ブイ",
+  "ticker": "PBUI"
+ },
+ "drep1yfu5d42qfu7e3euu4kkamcg3g3z2zn6sd674gkdww8ey63stlsrlt": {
+  "category": "個人(海外)",
+  "name": "Linda - Cryptofly",
+  "name_ja": "リンダ - クリプトフライ",
+  "ticker": "CFLY"
+ },
+ "drep1yfukpxsssua0tuqdpd9etnxtxc5t6cqrsyfmzmycxh92nhgksvnps": {
+  "category": "個人(日本)",
+  "name": "匿名",
+  "name_ja": "匿名",
+  "ticker": "ANON"
+ },
+ "drep1yg343cyuckglj48a6gpcey7fkfcy5x5f9g65wme3ne9q2mgaedmkm": {
+  "category": "個人(海外)",
+  "name": "Phil UPLC",
+  "name_ja": "フィル・UPLC",
+  "ticker": "UPLC"
+ },
+ "drep1ygeqtuysjy9s3mw3ej7essghq9rk3cnl08fehntu4jw3rtqfw96dg": {
+  "category": "企業・機関",
+  "name": "FIMI",
+  "name_ja": "フィミ",
+  "ticker": "FIMI"
+ },
+ "drep1yggcntj7vdc2l3j05w0ep84ay8qjz0fnrse6rl8gccd9fsqadw3qg": {
+  "category": "企業・機関",
+  "name": "WaffleCapital",
+  "name_ja": "ワッフルキャピタル",
+  "ticker": "WAFFLE"
+ },
+ "drep1ygj6hupsan57ujlv6l0vw9naxzt5753uhpe79nluymqzlcq7fe4vs": {
+  "category": "個人(日本)",
+  "name": "ranket",
+  "name_ja": "ランケット",
+  "ticker": "RANKET"
+ },
+ "drep1ygm9wxzrrdqpt0hek5kj7ys6tmsc8dycp7tkjwqxqrhjr6csq3s3t": {
+  "category": "個人(海外)",
+  "name": "Patrick_Tobler",
+  "name_ja": "パトリック・トブラー",
+  "ticker": "PTBLR"
+ },
+ "drep1ygnh2uf4wkc8ldgfxwz7rzuga3m8jtqew9xh5g3n587mg6g3ge0sj": {
+  "category": "企業・機関",
+  "name": "hix_coffeepool",
+  "name_ja": "hix_coffeepool",
+  "ticker": "HIXCP"
+ },
+ "drep1ygqgayvx8yzsaj9hprja3l6jy3v4px9z3u8uvecuvm3f92ce7mckx": {
+  "category": "個人(海外)",
+  "name": "Army of Spies",
+  "name_ja": "スパイ軍団",
+  "ticker": "AOS"
+ },
+ "drep1ygr9tuapcanc3kpeyy4dc3vmrz9cfe5q7v9wj3x9j0ap3tswtre9j": {
+  "category": "企業・機関",
+  "name": "Yoroi W₳llet",
+  "name_ja": "ヨロイウィレット",
+  "ticker": "YOROI"
+ },
+ "drep1ygs5hngva3hymv7j4v0aewxpsjqskj9dnmy7j3jz5ven5zqvulq2t": {
+  "category": "企業・機関",
+  "name": "Hermes Stakepool Germany (HRMS)",
+  "name_ja": "ヘルメス・ステークプール・ドイツ（HRMS）",
+  "ticker": "HRMS"
+ },
+ "drep1ygsgfhcydhlfglamhzkjn97rz3edef8a4z99fwl2frcwnrcmgurt3": {
+  "category": "個人(海外)",
+  "name": "Dave",
+  "name_ja": "デイブ",
+  "ticker": "DAVE"
+ },
+ "drep1ygtxcscvznhs2nqap9u8gtxa0dx0l6q5zhsqqlw46enwh8cttd07h": {
+  "category": "企業・機関",
+  "name": "TERA DRep",
+  "name_ja": "TERA DRep",
+  "ticker": "TERA"
+ },
+ "drep1yguh6dsgx0g58v8pqmxgfrkq0x8vfv6tcp92uzzjrykwy8cjmelsy": {
+  "category": "個人(海外)",
+  "name": "Florian Volery",
+  "name_ja": "フロリアン・ヴォレリー",
+  "ticker": "FLVOL"
+ },
+ "drep1ygxasnzmrevqra9vscpsy4xf4rqthzkp6rr6zzft2lc7nscahj9r9": {
+  "category": "個人(海外)",
+  "name": "Goofycrisp",
+  "name_ja": "グーフィークリスプ",
+  "ticker": "GOOFY"
+ },
+ "drep1ygxeadaklzz93n2tn9vnqz0fxapyv7ltel4d9808aeftl7gnxkszd": {
+  "category": "企業・機関",
+  "name": "NEDSCAVE.IO",
+  "name_ja": "NEDSCAVE.IO",
+  "ticker": "NEDS"
+ },
+ "drep1yt6lgdpqjey286qwt287mnk7sdqh95avfmde42vq3mltjys75kg5k": {
+  "category": "個人(日本)",
+  "name": "MUEN",
+  "name_ja": "無縁",
+  "ticker": "MUEN"
+ },
+ "drep1yt77crnmjuqkj9gcwjjsurez7s07jhwhyt4suxs3xeqftcsfrspun": {
+  "category": "個人(日本)",
+  "name": "JAZZ",
+  "name_ja": "ジャズ",
+  "ticker": "JAZZ"
+ },
+ "drep1yt8p080ajks6zdnxd9z6a6q60p9sm9j5rl7tc63mfna8r6cnp4wr3": {
+  "category": "企業・機関",
+  "name": "Everstake",
+  "name_ja": "エバーステーク",
+  "ticker": "EVRST"
+ },
+ "drep1ytcv4ax77s0enqef56qjflf4d8zjgxulukme9uf5p8cfaagysjppn": {
+  "category": "企業・機関",
+  "name": "Socious",
+  "name_ja": "ソシャス",
+  "ticker": "SOCIUS"
+ },
+ "drep1ytfwpmt2fvdnyvlswyjyggpf8alwkpm7ha6cua9nsak525ssmvm57": {
+  "category": "個人(海外)",
+  "name": "CryptoCrow",
+  "name_ja": "クリプトクロウ",
+  "ticker": "CROW"
+ },
+ "drep1ytjz60rgwhkzfhrv5hkvn9dxcerpwadq2khqvhp5fqws3kqmemccf": {
+  "category": "個人(日本)",
+  "name": "HISAI",
+  "name_ja": "久居",
+  "ticker": "HISAI"
+ },
+ "drep1yts3qdjsqcnhld4r3uek2uu0n2tnh824tgnf75a83q3yhequuy54u": {
+  "category": "個人(日本)",
+  "name": "AKYO",
+  "name_ja": "アキョ",
+  "ticker": "AKYO"
+ },
+ "drep1ytuddrgqca0xd4aams6pl9zndpcmxg0rs7z3mggjelm6kscp4arg5": {
+  "category": "個人(日本)",
+  "name": "SASA_nagamaru_ながまる",
+  "name_ja": "SASA_nagamaru_ながまる",
+  "ticker": "SASA"
+ },
+ "drep1ytvlwvyjmzfyn56n0zz4f6lj94wxhmsl5zky6knnzrf4jygpyahug": {
+  "category": "企業・機関",
+  "name": "EMURGO",
+  "name_ja": "エマーゴ",
+  "ticker": "EMURGO"
+ },
+ "drep1ytwmwvtd0a8lr45ssner2tjxzv5y8q03w3606yeald9mdmgmwecja": {
+  "category": "個人(海外)",
+  "name": "Martin Lang",
+  "name_ja": "マーティン・ラング",
+  "ticker": "MLANG"
+ },
+ "drep1ytzshxuma6cwrnlv2ucyclfqw3k4nu4nuudmh2z87j9hncsk9dhy4": {
+  "category": "個人(海外)",
+  "name": "Kyle Solomon",
+  "name_ja": "カイル・ソロモン",
+  "ticker": "KSOL"
+ }
+}

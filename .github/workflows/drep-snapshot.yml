@@ -1,0 +1,62 @@
+name: DRep snapshot
+
+# DRep Terminal 用のスナップショットを 1 日 1 回 Koios から作り直す。
+#
+# なぜ必要か:
+#   Koios は実 GET レスポンスに Access-Control-Allow-Origin を返さないため、
+#   静的ホスティング (GitHub Pages 等) に置いたページからは直接読めない。
+#   ここで JSON を作って同じリポジトリに置くことで、ページは同一オリジンの
+#   fetch だけで最新データを読めるようになる。
+#
+# コスト: public リポジトリなら GitHub Actions は無料。
+#         Koios もキー不要の無料エンドポイントしか叩かない (1 回あたり約 170 リクエスト)。
+
+on:
+  schedule:
+    # 毎日 21:10 UTC = 日本時間 翌 06:10
+    # (00 分ちょうどは Actions が混むのでずらしてある)
+    - cron: '10 21 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: drep-snapshot
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build snapshot
+        env:
+          DREP_OUT: drep-snapshot.json   # このリポジトリはルート直下で配信する
+        run: python tools/build-drep-snapshot.py
+
+      # YAML の run ブロック内では heredoc の終端子を字下げできないので、
+      # チェックは独立したスクリプトに出してある。
+      - name: Sanity check
+        env:
+          DREP_OUT: drep-snapshot.json
+        run: python tools/check-drep-snapshot.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add drep-snapshot.json
+          if git diff --cached --quiet; then
+            echo 'no change'
+          else
+            git commit -m "chore: refresh DRep snapshot ($(date -u +%Y-%m-%d))"
+            git push
+          fi
