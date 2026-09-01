@@ -301,11 +301,11 @@ canvas#yc{position:absolute;top:0;left:0;display:block;}
 canvas#xc{position:absolute;top:0;left:0;display:block;}
 .plabel{position:absolute;right:0;font-size:11px;font-weight:600;padding:2px 6px;pointer-events:none;display:none;white-space:nowrap;font-family:"SF Mono",ui-monospace,"IBM Plex Mono",Menlo,monospace;font-variant-numeric:tabular-nums;}
 /* Chart split layout */
-.chart-split{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;}
-.split-handle{height:6px;background:var(--bg-card2);border-top:1px solid var(--hairline-soft);border-bottom:1px solid var(--hairline-soft);cursor:row-resize;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s;}
-.split-grip{width:40px;height:2px;background:var(--text4);border-radius:2px;transition:all .15s;opacity:.5;}
+.chart-split{flex:1;display:flex;flex-direction:row;min-height:0;min-width:0;overflow:hidden;}
+.split-handle{width:6px;background:var(--bg-card2);border-left:1px solid var(--hairline-soft);border-right:1px solid var(--hairline-soft);cursor:col-resize;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.split-grip{width:2px;height:40px;background:var(--text4);border-radius:2px;transition:all .15s;opacity:.5;}
 .split-handle:hover{background:var(--bg-hover);}
-.split-handle:hover .split-grip{background:var(--accent);width:60px;opacity:1;}
+.split-handle:hover .split-grip{background:var(--accent);height:60px;opacity:1;}
 .delta-zone{position:relative;overflow:hidden;background:var(--bg-card);}
 canvas#vc{position:absolute;top:0;left:0;display:block;}
 .delta-lbl{position:absolute;top:4px;left:14px;font-size:10px;color:var(--text4);font-family:"SF Mono",ui-monospace,"IBM Plex Mono",Menlo,monospace;z-index:1;pointer-events:none;}
@@ -685,13 +685,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
       <span style="font-size:14px;font-weight:600;color:var(--text);letter-spacing:-0.3px">DRep Terminal</span>
     </div>
   </div>
-  <div class="nl a" id="navOverview" onclick="event.stopPropagation();setMainPage('overview',this)">全体</div>
-  <div class="nl" id="navMarket" onclick="event.stopPropagation();setMainPage('market',this);if(!mpOpen)toggleMP()">DRep Market</div>
-  <div class="nl" id="navAnalytics">Analytics</div>
-  <div class="nl" id="navEpoch">Epoch Stats</div>
+  <div class="nl a" id="navOverview" onclick="event.stopPropagation();setMainPage('overview',this)" data-i18n="nav.overview">全体</div>
+  <div class="nl" id="navMarket" onclick="event.stopPropagation();setMainPage('market',this);if(!mpOpen)toggleMP()" data-i18n="nav.market">DRep Market</div>
+  <div class="nl" id="navAnalytics" data-i18n="nav.analytics">Analytics</div>
+  <div class="nl" id="navEpoch" data-i18n="nav.epoch">Epoch Stats</div>
   <div class="nav-r">
     <div class="ep-pill" id="epochPill"><div class="ep-dot"></div><span id="epochText">Epoch 616</span></div>
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="テーマ切替">☀</button>
+    <button class="theme-toggle" id="langBtn" onclick="toggleLang()" data-i18n-title="lang.toggle" title="Switch language" style="min-width:34px;font-size:10px;font-weight:700;letter-spacing:.5px">JA</button><button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" data-i18n-title="theme.toggle" title="Toggle theme">☀</button>
   </div>
 </nav>
 
@@ -701,7 +701,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
     <div class="dbi" id="dbi"></div>
     <div>
       <div class="dbn" id="dbn">DRepを選択 <span id="darr" style="color:var(--text3);font-size:11px">▾</span></div>
-      <div class="dbc" id="dbc">カテゴリ</div>
+      <div class="dbc" id="dbc" data-i18n="tk.category">カテゴリ</div>
     </div>
   </div>
   <div class="ticker-mid">
@@ -710,11 +710,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
     <div class="tk-vp-chg" id="tkChgLine"></div>
   </div>
   <div class="tk-stats">
-    <div class="tstat"><div class="tsl" id="tkRLbl">ランク</div><div class="tsv" id="tkR">—</div></div>
-    <div class="tstat"><div class="tsl" id="tkDLbl">委任者</div><div class="tsv" id="tkD">—</div></div>
-    <div class="tstat"><div class="tsl" id="tkCLbl">前EP比</div><div class="tsv" id="tkC">—</div></div>
-    <div class="tstat"><div class="tsl" id="tkHLbl">最高VP</div><div class="tsv" id="tkH">—</div></div>
-    <div class="tstat"><div class="tsl" id="tkFLbl">初回EP</div><div class="tsv" id="tkF">—</div></div>
+    <div class="tstat"><div class="tsl" id="tkRLbl" data-i18n="tk.rank">ランク</div><div class="tsv" id="tkR">—</div></div>
+    <div class="tstat"><div class="tsl" id="tkDLbl" data-i18n="tk.delegators">委任者</div><div class="tsv" id="tkD">—</div></div>
+    <div class="tstat"><div class="tsl" id="tkCLbl" data-i18n="tk.chg">前EP比</div><div class="tsv" id="tkC">—</div></div>
+    <div class="tstat"><div class="tsl" id="tkHLbl" data-i18n="tk.peak">最高VP</div><div class="tsv" id="tkH">—</div></div>
+    <div class="tstat"><div class="tsl" id="tkFLbl" data-i18n="tk.first">初回EP</div><div class="tsv" id="tkF">—</div></div>
     <div class="nkw" id="nkw">⚠ Nakamoto 12 · Top12=53%VP</div>
     <button onclick="showKoiosKeyModal()" title="Koios APIキー設定"
       style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:6px;
@@ -733,20 +733,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
   </div>
   <div class="mp-srch"><input type="text" id="mpQ" placeholder="DRep..." oninput="renderMP()"></div>
   <div class="mp-cats">
-    <button class="mpcat a" onclick="filterCat(this,'all')">全て</button>
-    <button class="mpcat" onclick="filterCat(this,'企業・機関')">企業・機関</button>
-    <button class="mpcat" onclick="filterCat(this,'個人(日本)')">個人(JP)</button>
-    <button class="mpcat" onclick="filterCat(this,'個人(海外)')">個人(海外)</button>
+    <button class="mpcat a" onclick="filterCat(this,'all')" data-i18n="cat.all">全て</button>
+    <button class="mpcat" onclick="filterCat(this,'企業・機関')" data-i18n="cat.org">企業・機関</button>
+    <button class="mpcat" onclick="filterCat(this,'個人(日本)')" data-i18n="cat.jp">個人(JP)</button>
+    <button class="mpcat" onclick="filterCat(this,'個人(海外)')" data-i18n="cat.intl">個人(海外)</button>
     <button class="mpcat" onclick="filterCat(this,'SPO')">SPO</button>
     <button class="mpcat" onclick="filterCat(this,'jp')" style="border-color:rgba(255,59,48,.4);color:#ff3b30">🇯🇵 JAPAN</button>
   </div>
   <div class="mp-thead" id="mpThead">
-    <span></span><span>銘柄 (DRep名)</span>
-    <span style="text-align:right;cursor:pointer" onclick="mpSetSort('vp')">全委任量 <span id="mpS_vp"></span></span>
-    <span style="text-align:right;cursor:pointer" onclick="mpSetSort('count')">委任者数 <span id="mpS_count"></span></span>
-    <span style="text-align:right;cursor:pointer" onclick="mpSetSort('chg')">前EP比 <span id="mpS_chg"></span></span>
+    <span></span><span data-i18n="mp.name">銘柄 (DRep名)</span>
+    <span style="text-align:right;cursor:pointer" onclick="mpSetSort('vp')"><span data-i18n="mp.vp">全委任量</span> <span id="mpS_vp"></span></span>
+    <span style="text-align:right;cursor:pointer" onclick="mpSetSort('count')"><span data-i18n="mp.count">委任者数</span> <span id="mpS_count"></span></span>
+    <span style="text-align:right;cursor:pointer" onclick="mpSetSort('chg')"><span data-i18n="tk.chg">前EP比</span> <span id="mpS_chg"></span></span>
     <span style="text-align:right;cursor:pointer" onclick="mpSetSort('whale')">WHALE% <span id="mpS_whale"></span></span>
-    <span style="text-align:right;cursor:pointer" onclick="mpSetSort('rank')">ランク <span id="mpS_rank">▲</span></span>
+    <span style="text-align:right;cursor:pointer" onclick="mpSetSort('rank')"><span data-i18n="tk.rank">ランク</span> <span id="mpS_rank">▲</span></span>
   </div>
   <div class="mp-list" id="mpList"></div>
 </div>
@@ -766,18 +766,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
       <div id="ovParticipationSection" style="padding:12px 14px;border-bottom:1px solid var(--hairline-soft);flex-shrink:0;"></div>
       <!-- 上位 DRep (クリックで個別へ) -->
       <div style="padding:12px 14px;border-bottom:1px solid var(--hairline-soft);flex-shrink:0;">
-        <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px">上位 DRep <span style="font-size:9px;font-weight:400;text-transform:none;color:var(--text4)">クリックで個別分析へ</span></div>
+        <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px"><span data-i18n="ov.top">上位 DRep</span> <span style="font-size:9px;font-weight:400;text-transform:none;color:var(--text4)" data-i18n="ov.topHint">クリックで個別分析へ</span></div>
         <div id="ovTopList" style="display:flex;flex-direction:column;gap:1px;"></div>
       </div>
       <!-- 委任者内訳ドーナツ -->
       <div style="padding:12px 14px;border-bottom:1px solid var(--hairline-soft);flex-shrink:0;">
-        <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.4px;text-transform:uppercase;margin-bottom:10px">委任者内訳（全体集計）</div>
+        <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.4px;text-transform:uppercase;margin-bottom:10px" data-i18n="ov.breakdown">委任者内訳（全体集計）</div>
         <div style="display:flex;align-items:center;gap:14px;">
           <div style="position:relative;flex-shrink:0;width:90px;height:90px;">
             <canvas id="ovDonutCanvas" width="90" height="90" style="position:absolute;top:0;left:0;"></canvas>
             <div id="ovDonutCenter" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
               <div id="ovDonutPct" style="font-size:16px;font-weight:700;color:var(--text);font-family:'IBM Plex Mono',monospace;">—</div>
-              <div style="font-size:8px;color:var(--text4);">大口ADA</div>
+              <div style="font-size:8px;color:var(--text4);" data-i18n="ov.bigAda">大口ADA</div>
             </div>
           </div>
           <div id="ovDonutLegend" style="flex:1;display:flex;flex-direction:column;gap:4px;font-size:10px;font-family:'IBM Plex Mono',monospace;"></div>
@@ -785,17 +785,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
       </div>
       <!-- ① フロー分析 -->
       <div style="padding:12px 14px;border-bottom:1px solid var(--hairline-soft);flex-shrink:0;">
-        <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px">① フロー分析 <span style="font-size:9px;font-weight:400;text-transform:none;color:var(--text4)">直近3Epoch</span></div>
+        <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px">① <span data-i18n="ov.flow">フロー分析</span> <span style="font-size:9px;font-weight:400;text-transform:none;color:var(--text4)" data-i18n="ov.flowHint">直近3Epoch</span></div>
         <div id="ovFlowSection" style="display:flex;flex-direction:column;gap:3px;"></div>
       </div>
       <!-- ② 大口集中度 -->
       <div style="padding:12px 14px;border-bottom:1px solid var(--hairline-soft);flex-shrink:0;">
-        <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px">② 集中度分析</div>
+        <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px">② <span data-i18n="ov.conc">集中度分析</span></div>
         <div id="ovConcSection" style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
+      <!-- 取得元 -->
+      <div id="ovSource" style="padding:10px 14px;border-bottom:1px solid var(--hairline-soft);flex-shrink:0;font-size:9px;color:var(--text4);line-height:1.6"></div>
       <!-- ③ 委任移動率 -->
       <div style="padding:12px 14px;flex-shrink:0;">
-        <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px">③ 委任移動率 <span style="font-size:9px;font-weight:400;text-transform:none;color:var(--text4)">VP変動安定度</span></div>
+        <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px">③ <span data-i18n="ov.sticky">委任移動率</span> <span style="font-size:9px;font-weight:400;text-transform:none;color:var(--text4)" data-i18n="ov.stickyHint">VP変動安定度</span></div>
         <div id="ovStickySection" style="display:flex;flex-direction:column;gap:3px;"></div>
       </div>
     </div>
@@ -810,13 +812,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
   <!-- LEFT: CHART CARD -->
   <div class="chart-col">
     <div class="chart-nav">
-      <div class="ctab a" onclick="setCTab(this,'vp')">投票権 (VP)</div>
+      <div class="ctab a" onclick="setCTab(this,'vp')" data-i18n="chart.vp">投票権 (VP)</div>
       <div class="ctab" onclick="setCTab(this,'treemap')">Area Map</div>
-      <div class="ctab" onclick="setCTab(this,'quadrant')">象限マップ</div>
+      <div class="ctab" onclick="setCTab(this,'quadrant')" data-i18n="chart.quadrant">象限マップ</div>
       <div class="ctools" id="chartTools">
-        <button class="ctool a" onclick="setCType(this,'candle')">ローソク</button>
-        <button class="ctool" onclick="setCType(this,'line')">ライン</button>
-        <button class="ctool" onclick="setCType(this,'area')">エリア</button>
+        <button class="ctool a" onclick="setCType(this,'candle')" data-i18n="chart.candle">ローソク</button>
+        <button class="ctool" onclick="setCType(this,'line')" data-i18n="chart.line">ライン</button>
+        <button class="ctool" onclick="setCType(this,'area')" data-i18n="chart.areaType">エリア</button>
       </div>
     </div>
     <div class="chart-meta">
@@ -827,33 +829,33 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
       <div class="ohlc" id="ohlc" style="margin-left:auto;"></div>
     </div>
     <div class="chart-split" id="chartSplit">
-      <div class="chart-zone" id="chartZone" style="flex:2">
+      <div class="chart-zone" id="chartZone" style="flex:3;min-width:0">
         <div class="canvas-main" id="cm"><canvas id="mc"></canvas><div class="plabel" id="pl"></div></div>
         <div class="yaxis" id="ya"><canvas id="yc"></canvas></div>
         <div class="xaxis" id="xa"><canvas id="xc"></canvas></div>
       </div>
       <div class="split-handle" id="splitHandle"><div class="split-grip"></div></div>
-      <div id="delegatorZone" style="flex:1;overflow:hidden;border-top:1px solid var(--hairline-soft);display:flex;flex-direction:column;min-height:0">
+      <div id="delegatorZone" style="flex:2;overflow:hidden;border-left:1px solid var(--hairline-soft);display:flex;flex-direction:column;min-height:0;min-width:360px">
         <div id="delegatorContent" style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0"></div>
       </div>
     </div>
-    <div class="chart-foot"><span id="cfr">Epoch — → —</span><div style="margin-left:auto;display:flex;gap:10px"><span>Epoch時系列</span><span>UTC+9</span></div></div>
+    <div class="chart-foot"><span id="cfr">Epoch — → —</span><div style="margin-left:auto;display:flex;gap:10px"><span data-i18n="chart.series">Epoch時系列</span><span>UTC+9</span></div></div>
     <!-- Treemap fullscreen panel -->
     <div class="map-panel" id="treemapPanel">
-      <div class="delta-panel-title">DRep Area Map — VP規模</div>
+      <div class="delta-panel-title" data-i18n="map.areaTitle">DRep Area Map — VP規模</div>
       <div class="treemap-wrap" style="flex:1"><canvas id="tmCanvas"></canvas></div>
       <div class="hm-legend">
-        <div class="hm-leg-dot" style="background:#ff453a"></div><span class="hm-leg-lbl">企業・機関</span>
-        <div class="hm-leg-dot" style="background:#30c46a"></div><span class="hm-leg-lbl">個人JP</span>
-        <div class="hm-leg-dot" style="background:#5b6cff"></div><span class="hm-leg-lbl">個人海外</span>
+        <div class="hm-leg-dot" style="background:#ff453a"></div><span class="hm-leg-lbl" data-i18n="legend.org">企業・機関</span>
+        <div class="hm-leg-dot" style="background:#30c46a"></div><span class="hm-leg-lbl" data-i18n="legend.jp">個人JP</span>
+        <div class="hm-leg-dot" style="background:#5b6cff"></div><span class="hm-leg-lbl" data-i18n="legend.intl">個人海外</span>
         <div class="hm-leg-dot" style="background:#ff9f0a"></div><span class="hm-leg-lbl">SPO</span>
       </div>
     </div>
     <!-- Quadrant fullscreen panel -->
     <div class="map-panel" id="quadrantPanel">
-      <div class="delta-panel-title">ガバナンス象限マップ</div>
+      <div class="delta-panel-title" data-i18n="map.quadTitle">ガバナンス象限マップ</div>
       <div class="quadrant-wrap" style="flex:1"><canvas id="qmCanvas"></canvas></div>
-      <div class="hm-legend"><span class="hm-leg-lbl">X: 企業 ↔ 個人　Y: コミュニティ ↔ 開発者</span></div>
+      <div class="hm-legend"><span class="hm-leg-lbl" data-i18n="map.quadAxes">X: 企業 ↔ 個人　Y: コミュニティ ↔ 開発者</span></div>
     </div>
   </div>
 
@@ -876,7 +878,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 <!-- BOTTOM: IN/OUT -->
 <div class="bottom-panel" id="bottomPanel">
   <div class="bp-tabs">
-    <div class="bptab a" onclick="setBPTab(this,'allDel')">全委任フロー <span class="bptab-count" id="bpAllDelCnt">0</span></div>
+    <div class="bptab a" onclick="setBPTab(this,'allDel')"><span data-i18n="bp.allflow">全委任フロー</span> <span class="bptab-count" id="bpAllDelCnt">0</span></div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:10px;font-size:11px;color:var(--text3);">
       <span id="bpStatusLine"></span>
     </div>
@@ -900,6 +902,142 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 
 
 <script>
+/* ── 言語切替 (既定 EN / JP に切替可) ─────────────────────
+   静的ラベルは data-i18n 属性、動的描画は t() 経由で引く。
+   一次データが英語圏のオンチェーン情報なので既定を EN にしてある。 */
+var I18N = {
+  'nav.overview':    {en:'Overview',         ja:'全体'},
+  'nav.market':      {en:'DRep Market',      ja:'DRep Market'},
+  'nav.analytics':   {en:'Analytics',        ja:'Analytics'},
+  'nav.epoch':       {en:'Epoch Stats',      ja:'Epoch Stats'},
+  'tk.select':       {en:'Select a DRep',    ja:'DRepを選択'},
+  'tk.category':     {en:'Category',         ja:'カテゴリ'},
+  'tk.rank':         {en:'Rank',             ja:'ランク'},
+  'tk.delegators':   {en:'Delegators',       ja:'委任者'},
+  'tk.chg':          {en:'vs prev epoch',    ja:'前EP比'},
+  'tk.peak':         {en:'Peak VP',          ja:'最高VP'},
+  'tk.first':        {en:'First epoch',      ja:'初回EP'},
+  'tk.drepCount':    {en:'DReps',            ja:'DRep数'},
+  'tk.chgEp':        {en:'Change / epoch',   ja:'変化/Ep'},
+  'tk.topvp':        {en:'Top VP',           ja:'TOP VP'},
+  'tk.participation':{en:'Participation',    ja:'参加率'},
+  'tk.aggregate':    {en:'Cardano DRep — Aggregate', ja:'Cardano DRep 総合分析'},
+  'tk.aggregateSub': {en:'All DReps combined', ja:'全DRep統合データ'},
+  'theme.toggle':    {en:'Toggle theme',     ja:'テーマ切替'},
+  'lang.toggle':     {en:'Switch to Japanese', ja:'Switch to English'},
+  'ov.top':          {en:'Top DReps',        ja:'上位 DRep'},
+  'ov.topHint':      {en:'click for detail', ja:'クリックで個別分析へ'},
+  'ov.breakdown':    {en:'Delegator mix (all DReps)', ja:'委任者内訳（全体集計）'},
+  'ov.bigAda':       {en:'large ADA',        ja:'大口ADA'},
+  'ov.flow':         {en:'Flow',             ja:'フロー分析'},
+  'ov.flowHint':     {en:'last 3 epochs',    ja:'直近3Epoch'},
+  'ov.conc':         {en:'Concentration',    ja:'集中度分析'},
+  'ov.sticky':       {en:'Delegation turnover', ja:'委任移動率'},
+  'ov.stickyHint':   {en:'VP stability',     ja:'VP変動安定度'},
+  'ov.source':       {en:'Data source',      ja:'データ取得元'},
+  'ov.participation':{en:'Governance participation', ja:'ガバナンス参加率'},
+  'conc.top1':       {en:'Top 1 DRep',       ja:'Top 1 DRep'},
+  'conc.top5':       {en:'Top 5 DReps',      ja:'Top 5 DRep'},
+  'conc.top10':      {en:'Top 10 DReps',     ja:'Top 10 DRep'},
+  'conc.top20':      {en:'Top 20 DReps',     ja:'Top 20 DRep'},
+  'conc.dominant':   {en:'dominant',         ja:'支配DRep'},
+  'conc.nakamoto':   {en:'Nakamoto coefficient', ja:'Nakamoto係数'},
+  'conc.nakaHint':   {en:'DReps needed to control 51% (lower = more concentrated)',
+                      ja:'51%支配に必要なDRep数 (低=集中)'},
+  'denom.base':      {en:'Denominator = named DReps', ja:'分母 = 実名DRep合計'},
+  'denom.total':     {en:'Total delegated to DReps',  ja:'DRep委任 総量'},
+  'denom.abstain':   {en:'of which: always abstain',  ja:'うち 常時棄権'},
+  'denom.noconf':    {en:'of which: no confidence',   ja:'うち 不信任'},
+  'denom.loaded':    {en:'of which: in this dataset', ja:'うち集計済み'},
+  'unit.people':     {en:'',                 ja:'人'},
+  'src.koios':       {en:'— Cardano on-chain API (free, no API key)',
+                      ja:'— Cardano オンチェーンAPI (無料・キー不要)'},
+  'src.asof':        {en:'as of epoch',      ja:'Epoch'},
+  'src.asofTail':    {en:'',                 ja:' 時点'},
+  'src.fetched':     {en:'fetched',          ja:'取得'},
+  'src.daily':       {en:'updated once a day', ja:'1日1回更新'},
+  'src.meta':        {en:'DRep names and images come from each DRep own CIP-119 metadata. Japanese labels and category tags are curated by this page.',
+                      ja:'DRep名・画像は各DRepが登録した CIP-119 メタデータ由来。日本語表記と分類は本ページの手作業。'},
+  'src.none':        {en:'Embedded data (no source information)', ja:'ページ埋め込みデータ (取得元情報なし)'},
+  'src.notLoaded':   {en:'Snapshot not loaded', ja:'スナップショット未読み込み'},
+  'chart.vp':        {en:'Voting power (VP)', ja:'投票権 (VP)'},
+  'chart.quadrant':  {en:'Quadrant map',     ja:'象限マップ'},
+  'chart.candle':    {en:'Candle',           ja:'ローソク'},
+  'chart.line':      {en:'Line',             ja:'ライン'},
+  'chart.areaType':  {en:'Area',             ja:'エリア'},
+  'chart.series':    {en:'Epoch series',     ja:'Epoch時系列'},
+  'cat.all':         {en:'All',              ja:'全て'},
+  'cat.org':         {en:'Org / Institution', ja:'企業・機関'},
+  'cat.jp':          {en:'Individual (JP)',  ja:'個人(JP)'},
+  'cat.intl':        {en:'Individual (Intl)', ja:'個人(海外)'},
+  'mp.name':         {en:'DRep',             ja:'銘柄 (DRep名)'},
+  'mp.vp':           {en:'Voting power',     ja:'全委任量'},
+  'mp.count':        {en:'Delegators',       ja:'委任者数'},
+  'bp.allflow':      {en:'All delegation flow', ja:'全委任フロー'},
+  'legend.org':      {en:'Org',              ja:'企業・機関'},
+  'legend.jp':       {en:'Individual JP',    ja:'個人JP'},
+  'legend.intl':     {en:'Individual Intl',  ja:'個人海外'},
+  'map.areaTitle':   {en:'DRep Area Map — by VP', ja:'DRep Area Map — VP規模'},
+  'map.quadTitle':   {en:'Governance quadrant map', ja:'ガバナンス象限マップ'},
+  'map.quadAxes':    {en:'X: org ↔ individual    Y: community ↔ developer',
+                      ja:'X: 企業 ↔ 個人　Y: コミュニティ ↔ 開発者'},
+  'st.snapshot':     {en:'Daily snapshot — realtime fetch unavailable (Koios cannot be read directly from static hosting)',
+                      ja:'日次スナップショット表示中 — リアルタイム取得は不可 (Koios は静的ホスティングから直接読めない)'},
+  'st.embedded':     {en:'Koios unreachable — using embedded data',
+                      ja:'Koios接続失敗 — 埋め込みデータ使用中'},
+  'st.noData':       {en:'no data',          ja:'データなし'},
+  'epoch.snapshot':  {en:'snapshot',         ja:'スナップショット'},
+  'epoch.embedded':  {en:'embedded data',    ja:'埋め込みデータ'},
+  'sel.prompt':      {en:'Select a DRep',    ja:'DRepを選択'}
+};
+
+var _lang = 'en';
+try { _lang = (localStorage.getItem('drep-lang') === 'ja') ? 'ja' : 'en'; } catch (e) {}
+
+function t(k) {
+  var e = I18N[k];
+  if (!e) return k;
+  var v = e[_lang];
+  return (v === undefined || v === null) ? (e.en || k) : v;
+}
+
+function applyI18n() {
+  document.documentElement.lang = _lang;
+  var nodes = document.querySelectorAll('[data-i18n]');
+  for (var i = 0; i < nodes.length; i++) {
+    nodes[i].textContent = t(nodes[i].getAttribute('data-i18n'));
+  }
+  var tt = document.querySelectorAll('[data-i18n-title]');
+  for (var j = 0; j < tt.length; j++) {
+    tt[j].title = t(tt[j].getAttribute('data-i18n-title'));
+  }
+  var b = document.getElementById('langBtn');
+  if (b) {
+    b.textContent = (_lang === 'en') ? 'JA' : 'EN';
+    b.title = t('lang.toggle');
+  }
+}
+
+function toggleLang() {
+  _lang = (_lang === 'en') ? 'ja' : 'en';
+  try { localStorage.setItem('drep-lang', _lang); } catch (e) {}
+  applyI18n();
+  // 動的に組み立てている箇所は描き直さないと切り替わらない
+  try {
+    if (typeof renderMP === 'function') renderMP();
+    if (typeof renderRP === 'function') renderRP();
+    if (typeof renderBP === 'function') renderBP();
+    if (typeof _mainPage !== 'undefined' && _mainPage === 'overview'
+        && typeof setMainPage === 'function') {
+      setMainPage('overview', document.getElementById('navOverview'));
+    } else if (typeof updateTicker === 'function' && typeof sel !== 'undefined' && sel) {
+      updateTicker();
+    }
+  } catch (e) { console.warn('[i18n] re-render failed:', e); }
+}
+
+document.addEventListener('DOMContentLoaded', applyI18n);
+
 /* ── Theme toggle (Aurora Light/Dark) ── */
 var _isDark = true;
 function toggleTheme(){
@@ -1409,7 +1547,7 @@ function pickDRep(id){
   if(ovPage)  ovPage.style.display='none';
   if(mainWrp) mainWrp.style.display='';
   // ラベル復元
-  var lblDef={tkRLbl:'ランク',tkDLbl:'委任者',tkCLbl:'前EP比',tkHLbl:'最高VP',tkFLbl:'初回EP'};
+  var lblDef={tkRLbl:t('tk.rank'),tkDLbl:t('tk.delegators'),tkCLbl:t('tk.chg'),tkHLbl:t('tk.peak'),tkFLbl:t('tk.first')};
   Object.keys(lblDef).forEach(function(id2){var e=document.getElementById(id2);if(e)e.textContent=lblDef[id2];});
   closeMP();updateTicker();resetZoom();renderRP();
   renderBreakdownSection();
@@ -1431,7 +1569,7 @@ function pickOverview(){
 function updateTicker(){
   if(!sel)return;
   // ラベル復元（総合分析モードから戻ったとき）
-  var lblDef={tkRLbl:'ランク',tkDLbl:'委任者',tkCLbl:'前EP比',tkHLbl:'最高VP',tkFLbl:'初回EP'};
+  var lblDef={tkRLbl:t('tk.rank'),tkDLbl:t('tk.delegators'),tkCLbl:t('tk.chg'),tkHLbl:t('tk.peak'),tkFLbl:t('tk.first')};
   Object.keys(lblDef).forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=lblDef[id];});
   const d=sel,cc=catColor(d.category);
   var dbiEl=document.getElementById('dbi');
@@ -1497,9 +1635,9 @@ function updateOvTicker(){
   dbiEl.style.color='#7c7ce8';
   dbiEl.style.fontSize='22px';
   dbiEl.style.overflow='';
-  document.getElementById('dbn').innerHTML='Cardano DRep 総合分析'
+  document.getElementById('dbn').innerHTML=t('tk.aggregate')
     +' <span id="darr" style="color:var(--text3);font-size:11px">▾</span>';
-  document.getElementById('dbc').textContent='全DRep統合データ · ADA $'+adaP.toFixed(2);
+  document.getElementById('dbc').textContent=t('tk.aggregateSub')+' · ADA $'+adaP.toFixed(2);
 
   // VP big = 総委任量（B₳）
   var vpEl=document.getElementById('tkVP');
@@ -1655,7 +1793,7 @@ function drawChart(){
 
   if(!sel){
     ctx.fillStyle=_chartMidTxt();ctx.font='11px IBM Plex Mono';ctx.textAlign='center';
-    ctx.fillText('← DRepを選択してください',W/2,H/2);return;
+    ctx.fillText('' + t('sel.prompt') + '',W/2,H/2);return;
   }
   const raw=getRawSlice(),data=getPlot();
   if(data.length<2)return;
@@ -1897,7 +2035,7 @@ function setMainPage(page, el){
     if(mainWrp) mainWrp.style.display = '';
     if(ovPage)  ovPage.style.display  = 'none';
     // ラベル復元
-    var lblDef={tkRLbl:'ランク',tkDLbl:'委任者',tkCLbl:'前EP比',tkHLbl:'最高VP',tkFLbl:'初回EP'};
+    var lblDef={tkRLbl:t('tk.rank'),tkDLbl:t('tk.delegators'),tkCLbl:t('tk.chg'),tkHLbl:t('tk.peak'),tkFLbl:t('tk.first')};
     Object.keys(lblDef).forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=lblDef[id];});
     if(sel) updateTicker();
   } else if(page === 'overview'){
@@ -1954,7 +2092,7 @@ function renderOvTopList(){
   if(!sorted.length){
     var empty = document.createElement('div');
     empty.style.cssText = 'color:var(--text4);font-size:10px';
-    empty.textContent = 'データなし';
+    empty.textContent = t('st.noData');
     el.appendChild(empty);
     return;
   }
@@ -1964,7 +2102,7 @@ function renderOvTopList(){
     var nm  = d.name_ja || d.name || String(d.id).slice(0,14);
     var vp  = d.latest_vp || 0;
     var pct = vp/total*100;
-    var del = (d.delegators != null) ? Number(d.delegators).toLocaleString('ja-JP') : '—';
+    var del = (d.delegators != null) ? Number(d.delegators).toLocaleString() : '—';
 
     var row = document.createElement('div');
     row.title = nm;
@@ -1997,7 +2135,7 @@ function renderOvTopList(){
 
     var sDel = document.createElement('span');
     sDel.style.color = 'var(--text4)';
-    sDel.textContent = del + '人';
+    sDel.textContent = del + t('unit.people');
 
     cNum.appendChild(sVp);
     cNum.appendChild(sPct);
@@ -2018,9 +2156,60 @@ function renderOvTopList(){
   });
 }
 
+// 数字の出どころを画面に出す。何を見ているのか分からない状態にしない。
+function renderOvSource(){
+  var el = document.getElementById('ovSource');
+  if(!el) return;
+  el.innerHTML = '';
+  var src = (SNAP_META && SNAP_META.source) || null;
+  var head = document.createElement('div');
+  head.style.cssText = 'font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px';
+  head.textContent = t('ov.source');
+  el.appendChild(head);
+
+  var line1 = document.createElement('div');
+  if(src && src.url){
+    var a = document.createElement('a');
+    a.href = src.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.style.cssText = 'color:var(--accent);text-decoration:none';
+    a.textContent = src.name || 'Koios';
+    line1.appendChild(a);
+    line1.appendChild(document.createTextNode(' ' + t('src.koios')));
+  } else {
+    line1.textContent = t('src.none');
+  }
+  el.appendChild(line1);
+
+  if(src && src.api){
+    var l2 = document.createElement('div');
+    l2.style.color = 'var(--text4)';
+    l2.textContent = src.api;
+    el.appendChild(l2);
+  }
+  if(src && src.endpoints){
+    var l3 = document.createElement('div');
+    l3.style.cssText = 'color:var(--text4);word-break:break-all';
+    l3.textContent = src.endpoints.join('  ');
+    el.appendChild(l3);
+  }
+  var l4 = document.createElement('div');
+  l4.style.cssText = 'margin-top:4px;color:var(--text3)';
+  l4.textContent = SNAP_META
+    ? (t('src.asof') + ' ' + SNAP_META.epoch + t('src.asofTail') + ' · ' + t('src.fetched') + ' '
+       + String(SNAP_META.generated_at).replace('T',' ').replace('Z',' UTC') + ' · ' + t('src.daily'))
+    : t('src.notLoaded');
+  el.appendChild(l4);
+
+  var l5 = document.createElement('div');
+  l5.style.cssText = 'margin-top:4px;color:var(--text4)';
+  l5.textContent = t('src.meta');
+  el.appendChild(l5);
+}
+
 function drawOverviewRight(){
   renderOvParticipation();
   renderOvTopList();
+  renderOvSource();
   drawOvDonut();
   renderOvFlow();
   renderOvConc();
@@ -2184,8 +2373,11 @@ function renderOvFlow(){
 function renderOvConc(){
   var el=document.getElementById('ovConcSection');if(!el)return;
   var sorted=DREPS.slice().sort(function(a,b){return(b.latest_vp||0)-(a.latest_vp||0);});
-  var total=sorted.reduce(function(s,d){return s+(d.latest_vp||0);},0);
-  if(!total){el.innerHTML='<div style="color:var(--text4);font-size:10px">データなし</div>';return;}
+  var loadedSum=sorted.reduce(function(s,d){return s+(d.latest_vp||0);},0);
+  // 分母は「実名 DRep の総量」。読み込めている DRep の合計ではない。
+  // (always_abstain が全体の 6 割超を占めるので、これを混ぜても除いても数字が変わる)
+  var total = (SNAP_TOTALS && SNAP_TOTALS.named_total_m) ? SNAP_TOTALS.named_total_m : loadedSum;
+  if(!total){el.innerHTML='<div style="color:var(--text4);font-size:10px">'+t('st.noData')+'</div>';return;}
   function topPct(n){return sorted.slice(0,n).reduce(function(s,d){return s+(d.latest_vp||0);},0)/total*100;}
   var p1=topPct(1),p5=topPct(5),p10=topPct(10),p20=topPct(20);
   var nak=0,cum=0;
@@ -2200,15 +2392,36 @@ function renderOvConc(){
       +'<div style="width:'+Math.min(100,pct)+'%;height:100%;background:'+color+'55;border-radius:2px"></div></div>'
       +'</div>';
   }
-  el.innerHTML=concRow('Top 1 DRep',p1,'#ff453a','支配DRep')
-    +concRow('Top 5 DRep',p5,'#ff9f0a')
-    +concRow('Top 10 DRep',p10,'#ffd60a')
-    +concRow('Top 20 DRep',p20,'#00d97e')
+  el.innerHTML=concRow(t('conc.top1'),p1,'#ff453a',t('conc.dominant'))
+    +concRow(t('conc.top5'),p5,'#ff9f0a')
+    +concRow(t('conc.top10'),p10,'#ffd60a')
+    +concRow(t('conc.top20'),p20,'#00d97e')
     +'<div style="display:flex;justify-content:space-between;padding:6px 8px;background:var(--surface-sub);border-radius:6px;margin-top:4px">'
-    +'<span style="font-size:9px;color:var(--text3)">Nakamoto係数</span>'
+    +'<span style="font-size:9px;color:var(--text3)">'+t('conc.nakamoto')+'</span>'
     +'<span style="font-size:14px;font-weight:700;color:'+(nak<=10?'#ff453a':nak<=20?'#ff9f0a':'#00d97e')+';font-family:IBM Plex Mono,monospace">'+nak+'</span>'
     +'</div>'
-    +'<div style="font-size:8px;color:var(--text4);margin-top:4px">51%支配に必要なDRep数 (低=集中)</div>';
+    +'<div style="font-size:8px;color:var(--text4);margin-top:4px">'+t('conc.nakaHint')+'</div>'
+    + (SNAP_TOTALS ? _ovDenomNote(total, loadedSum) : '');
+}
+
+// 分母の内訳。数字がどこから来ているかを画面に出しておく。
+function _ovDenomNote(total, loadedSum){
+  var tt = SNAP_TOTALS || {};
+  var tr = t;   // ローカルの tt と i18n の t() を取り違えないようにする
+  function row(l, v, sub){
+    return '<div style="display:flex;justify-content:space-between;gap:6px">'
+      + '<span style="color:var(--text4)">'+l+'</span>'
+      + '<span style="color:var(--text3);font-family:IBM Plex Mono,monospace">'+v
+      + (sub?'<span style="color:var(--text4)"> '+sub+'</span>':'')+'</span></div>';
+  }
+  var out = '<div style="margin-top:8px;padding-top:6px;border-top:1px solid var(--hairline-soft);font-size:8px;display:flex;flex-direction:column;gap:2px">';
+  out += row(t('denom.base'), (total||0).toFixed(0)+'M₳');
+  if(tt.drep_total_m != null)   out += row(tr('denom.total'), tt.drep_total_m.toFixed(0)+'M₳', '('+(tt.drep_count||'—')+' DRep)');
+  if(tt.abstain_m != null)      out += row(tr('denom.abstain'), tt.abstain_m.toFixed(0)+'M₳', tt.abstain_delegators!=null?('/ '+Number(tt.abstain_delegators).toLocaleString()+tr('unit.people')):'');
+  if(tt.no_confidence_m != null)out += row(tr('denom.noconf'), tt.no_confidence_m.toFixed(0)+'M₳', tt.no_confidence_delegators!=null?('/ '+Number(tt.no_confidence_delegators).toLocaleString()+tr('unit.people')):'');
+  out += row(tr('denom.loaded'), (loadedSum||0).toFixed(0)+'M₳', '('+DREPS.length+' DRep)');
+  out += '</div>';
+  return out;
 }
 
 // ── ③ 委任移動率（VP変動安定度）──
@@ -2868,11 +3081,24 @@ function renderCatalystPanel(drepId){
 }
 
 // ── RIGHT COLUMN ───────────────────────────────────────────────
+// 右カラム (DRep Data) の表示切替。
+// Catalyst 詳細や日本DRepプロフィールを出すときだけ開き、
+// 中身が無いときは畳んでチャート側に幅を渡す。
+function _setFormColVisible(on){
+  var fc = document.getElementById('formCol');
+  if(fc) fc.style.display = on ? '' : 'none';
+  // .chart-col は flex:0 0 34% で固定されているため、右カラムを畳んでも
+  // そのままでは伸びない。畳んだぶんの幅をチャート側に渡す。
+  var cc = document.querySelector('.chart-col');
+  if(cc) cc.style.flex = on ? '' : '1 1 auto';
+}
+
 function renderRightCol(){
   const el = document.getElementById('rcBody');
   if(!el) return;
 
   if(!sel){
+    _setFormColVisible(false);
     el.setAttribute('style','padding:6px 8px;overflow:hidden;flex:1;display:flex;flex-direction:column');
     el.innerHTML='<div style="color:var(--text3);font-size:10px;text-align:center;padding:30px 0">← DRepを選択</div>';
     return;
@@ -3587,17 +3813,21 @@ function renderRightCol(){
 
   if(isJP || (catData && spoData)){
     // ── 日本DRep / フルプロファイル: タイルグリッド全幅 ──
+    _setFormColVisible(true);
     el.setAttribute('style','padding:0;overflow:hidden;flex:1;display:flex;flex-direction:column');
     el.innerHTML = buildProfileHtml();
     _fetchTreasuryVotes(sel.id);
   } else if(catData){
     // ── Catalystあり分割（海外DRep）: LEFT=Catalyst詳細 / RIGHT=基本スタッツ ──
+    _setFormColVisible(true);
     el.setAttribute('style','padding:0;overflow:hidden;flex:1;display:flex;flex-direction:column');
     el.innerHTML=renderCatalystPanel(sel.id);
   } else {
     // ── 通常レイアウト（海外DRep等）──
+    // ここは案内文しか出せない分岐。右カラムごと畳んで本体に幅を渡す。
     el.setAttribute('style','padding:8px 10px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:6px');
-    el.innerHTML='<div style="font-size:9px;color:var(--text3);text-align:center;margin-top:20px">委任者内訳・委任フローは左パネル下部をご覧ください</div>';
+    el.innerHTML='';
+    _setFormColVisible(false);
   }
   renderDRepFlow();
   const segs2p=segs.filter(s=>s.cnt>0);
@@ -5003,13 +5233,13 @@ async function _liveLoadOnce(opts){
       // ただし日次スナップショットを読めているならそれは「静的データ」ではないので、
       // loadSnapshot が付けた表示を潰さない。
       if(_snapLoaded){
-        setBar('日次スナップショット表示中 — リアルタイム取得は不可 (Koios は静的ホスティングから直接読めない)', '#4a8fd4');
+        setBar(t('st.snapshot'), '#4a8fd4');
       } else {
         var _epStatic = document.getElementById('epochText');
         if(_epStatic && EPOCHS.length){
-          _epStatic.textContent = 'Epoch ' + EPOCHS[EPOCHS.length-1] + ' · 埋め込みデータ';
+          _epStatic.textContent = 'Epoch ' + EPOCHS[EPOCHS.length-1] + ' · ' + t('epoch.embedded');
         }
-        setBar('⚠ Koios接続失敗 — 埋め込みデータ使用中 　🔑 <span onclick="showKoiosKeyModal()" style="cursor:pointer;text-decoration:underline;pointer-events:auto">APIキー設定</span>', '#c0304a');
+        setBar('⚠ ' + t('st.embedded') + ' 　🔑 <span onclick="showKoiosKeyModal()" style="cursor:pointer;text-decoration:underline;pointer-events:auto">APIキー設定</span>', '#c0304a');
       }
       // バーのpointer-eventsを有効にする
       var bar = document.getElementById('liveBar');
@@ -5242,6 +5472,8 @@ document.addEventListener('visibilitychange', function(){
    公開した静的ページでも読める (Koios を直接 fetch すると CORS で落ちる)。
    埋め込み DB より新しいときだけ採用し、無ければ黙って埋め込みを使う。 */
 var _snapLoaded = false;   // 日次スナップショットを読めたか
+var SNAP_TOTALS = null;    // Koios から取った epoch 全体の総量 (集中度の分母)
+var SNAP_META   = null;    // 取得元・生成時刻
 async function loadSnapshot(){
   var snap = null;
   try{
@@ -5263,7 +5495,7 @@ async function loadSnapshot(){
 
   var epEl = document.getElementById('epochText');
   if(epEl){
-    epEl.textContent = 'Epoch ' + snapLast + ' · スナップショット ' + String(snap.generated_at||'').slice(0,10);
+    epEl.textContent = 'Epoch ' + snapLast + ' · ' + t('epoch.snapshot') + ' ' + String(snap.generated_at||'').slice(0,10);
   }
   // 集中度表示もスナップショットの数字で引き直す
   var totalVP = DREPS.reduce(function(a,d){ return a + (d.latest_vp||0); }, 0);
@@ -5287,7 +5519,15 @@ async function loadSnapshot(){
       setMainPage('overview', document.getElementById('navOverview'));
     }
   }catch(e){ console.warn('[SNAP] re-render failed:', e); }
-  setBar('スナップショット Epoch ' + snapLast + ' (' + String(snap.generated_at||'').slice(0,10) + ') · ' + DREPS.length + ' DReps', '#4a8fd4');
+  setBar(t('epoch.snapshot') + ' — Epoch ' + snapLast + ' (' + String(snap.generated_at||'').slice(0,10) + ') · ' + DREPS.length + ' DReps', '#4a8fd4');
+  SNAP_TOTALS = snap.totals || null;
+  SNAP_META   = { source: snap.source || null, generated_at: snap.generated_at || '', epoch: snapLast };
+  if(SNAP_TOTALS){
+    // 実行時に Koios を叩けない環境 (静的ホスティング) でも参加率を正しく出す
+    if(SNAP_TOTALS.active_stake_m) GOVERNANCE_STATS.active_stake_m = SNAP_TOTALS.active_stake_m;
+    if(SNAP_TOTALS.circulation_m)  GOVERNANCE_STATS.circ_m         = SNAP_TOTALS.circulation_m;
+    if(SNAP_TOTALS.active_stake_m) GOVERNANCE_STATS.loaded = true;
+  }
   _snapLoaded = true;
   console.log('[SNAP] epoch', snapLast, DREPS.length, 'dreps, generated', snap.generated_at);
   return true;
@@ -5343,31 +5583,35 @@ async function startLiveLoad(){
   });
 })();
 
-// ─── CHART / DELTA SPLIT RESIZE ─────────────────────────
+// ─── チャート / 委任者内訳 の左右分割リサイズ ─────────────
+// 旧版は上下分割で、しかも存在しない #deltaZone を参照していたため
+// mousedown 直後に return して一度も動いていなかった。
 (function(){
-  var splitDrag=false, splitStartY=0, startChartH=0, startDeltaH=0;
+  var splitDrag=false, splitStartX=0, startChartW=0, startZoneW=0;
   var handle=document.getElementById('splitHandle');
   if(!handle)return;
+  function zones(){
+    return [document.getElementById('chartZone'),
+            document.getElementById('delegatorZone')];
+  }
   handle.addEventListener('mousedown',function(e){
-    splitDrag=true; splitStartY=e.clientY;
-    var cz=document.getElementById('chartZone');
-    var dz=document.getElementById('deltaZone');
-    if(!cz||!dz)return;
-    startChartH=cz.offsetHeight; startDeltaH=dz.offsetHeight;
-    document.body.style.cursor='row-resize';
+    var z=zones();
+    if(!z[0]||!z[1])return;
+    splitDrag=true; splitStartX=e.clientX;
+    startChartW=z[0].offsetWidth; startZoneW=z[1].offsetWidth;
+    document.body.style.cursor='col-resize';
     document.body.style.userSelect='none';
     e.preventDefault();
   });
   document.addEventListener('mousemove',function(e){
     if(!splitDrag)return;
-    var dy=e.clientY-splitStartY;
-    var cz=document.getElementById('chartZone');
-    var dz=document.getElementById('deltaZone');
-    if(!cz||!dz)return;
-    var newCH=Math.max(80, startChartH+dy);
-    var newDH=Math.max(40, startDeltaH-dy);
-    cz.style.flex='none'; cz.style.height=newCH+'px';
-    dz.style.flex='none'; dz.style.height=newDH+'px';
+    var z=zones();
+    if(!z[0]||!z[1])return;
+    var dx=e.clientX-splitStartX;
+    var newCW=Math.max(260, startChartW+dx);
+    var newZW=Math.max(320, startZoneW-dx);
+    z[0].style.flex='none'; z[0].style.width=newCW+'px';
+    z[1].style.flex='none'; z[1].style.width=newZW+'px';
     drawAll();
   });
   document.addEventListener('mouseup',function(){
@@ -5375,6 +5619,7 @@ async function startLiveLoad(){
     splitDrag=false;
     document.body.style.cursor='';
     document.body.style.userSelect='';
+    drawAll();
   });
 })();
 

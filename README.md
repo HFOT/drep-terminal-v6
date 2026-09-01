@@ -1,61 +1,74 @@
 # DRep Governance Terminal
 
-Cardano の DRep（Delegated Representative）を、検証できる数字だけで読むための一枚もの。
+Read Cardano's DRep landscape from numbers you can verify.
 
 **→ https://hfot.github.io/drep-terminal-v6/**
 
-## 何を見るページか
+English by default, with a Japanese toggle (`JA` / `EN` in the top-right).
 
-投票権（VP）が誰にどれだけ集まっているかという **ガバナンスの構造** を見るためのもの。
-起動するとまず全体像が出る。
+## What this page is for
 
-- 総投票力、アクティブ DRep 数、ガバナンス参加率
-- **Nakamoto 係数** — 51% を支配するのに必要な DRep 数（小さいほど集中している）
-- Top 1 / 5 / 10 / 20 の集中度
-- 委任者内訳（大口の比率）、委任の流入出、VP 変動の安定度
-- 上位 DRep 一覧 → クリックで個別分析（VP 推移チャート、委任者内訳、フロー履歴）
+It shows the **structure of voting power** — who holds how much, and how concentrated
+that is. It opens on the aggregate view rather than an empty screen.
 
-委任のシミュレーション機能は持たない。ここは読むための場所で、実際の委任は
-ウォレット（Yoroi / Eternl / Lace 等）や GovTool で行うもの。
+- Total voting power, active DRep count, governance participation rate
+- **Nakamoto coefficient** — how many DReps it takes to control 51% (lower = more concentrated)
+- Top 1 / 5 / 10 / 20 concentration, with the denominator spelled out
+- Delegator mix (share held by large holders), delegation flow, VP stability
+- Top DRep list → click through to an individual view (VP history, delegator mix, flow log)
 
-## データ
+There is **no delegation simulator**. This is a place to read; actual delegation belongs
+in a wallet (Yoroi / Eternl / Lace) or GovTool.
 
-すべて [Koios](https://koios.rest/) の公開 API 由来。API キー不要の無料エンドポイントのみを使う。
+## Data
 
-`drep-snapshot.json` を GitHub Actions が **1 日 1 回** 作り直してコミットする。
-ページは同一オリジンのこの JSON を読む。
+Everything comes from [Koios](https://koios.rest/), using only free endpoints that need no API key.
+`drep-snapshot.json` is rebuilt by GitHub Actions **once a day** and the page reads that
+same-origin file. The page also shows its own source panel: which API, which endpoints,
+which epoch, and when it was fetched.
 
-なぜ直接 Koios を叩かないか: Koios は実 GET レスポンスに
-`Access-Control-Allow-Origin` を返さないため、静的ホスティングに置いた
-ページからブラウザで直接 fetch すると CORS で必ず失敗する。
-（プリフライトだけは通るので気付きにくい。）
+**Why not call Koios directly from the browser:** Koios does not return an
+`Access-Control-Allow-Origin` header on actual GET responses, so a page on static hosting
+always fails CORS. (The preflight *does* pass, which makes this easy to misdiagnose.)
 
-数字の粒度について: Koios は epoch 単位（1 epoch = 5 日）でしか履歴を返さない。
-そのため「24 時間の変化」は取得できず、表示しているのは **前 epoch 比**。
+### Accuracy notes
 
-`name_ja`（日本語表記）と `category`（企業・機関 / 個人など）はチェーン上に無い
-手作業の分類なので、`tools/drep-curated.json` に置いて DRep ID で毎回引き継いでいる。
-上位 50 に新しく入った DRep は、分類されるまで英語名・「不明」で表示される。
+- **All active DReps are fetched**, not a top-N slice. Taking only the top 50 made the
+  concentration denominator too small and overstated every percentage.
+- The denominator is **named DReps**, not the raw epoch total. At epoch 652 the total
+  delegated to DReps was 15,061 M₳, but `drep_always_abstain` alone held 9,777 M₳ (65%)
+  and `drep_always_no_confidence` 150 M₳. Those are predefined options, not representatives,
+  so they are reported separately and excluded from the denominator. The page shows this
+  breakdown so the number is checkable.
+- Koios returns history at **epoch granularity** (1 epoch = 5 days), so a true 24-hour
+  change is not obtainable. The page shows **change vs. previous epoch** and labels it that way.
+- Delegator counts come from `live_delegator_count` in `drep_info`.
+- `name_ja` (Japanese labels) and `category` are **not on-chain**. They are curated by hand
+  in `tools/drep-curated.json` and carried across rebuilds by DRep ID. DReps without an entry
+  show their English metadata name and an "unknown" category.
 
-## 中身
+## Layout
 
 | | |
 |---|---|
-| `index.html` | ページ本体（単体で開いても動く。その場合は埋め込みデータを使う） |
-| `drep-snapshot.json` | 日次スナップショット（Actions が更新） |
-| `tools/build-drep-snapshot.py` | 生成スクリプト。stdlib のみ、pip 不要 |
-| `tools/check-drep-snapshot.py` | 空・欠損スナップショットのコミットを防ぐ検査 |
-| `tools/drep-curated.json` | 日本語名・分類の手作業分 |
-| `.github/workflows/drep-snapshot.yml` | 毎日 21:10 UTC（JST 06:10）+ 手動実行 |
+| `index.html` | The page. Opens standalone too — it then falls back to embedded data |
+| `drep-snapshot.json` | Daily snapshot (written by Actions) |
+| `tools/build-drep-snapshot.py` | Generator. Standard library only, no pip install |
+| `tools/check-drep-snapshot.py` | Guards against committing an empty or gutted snapshot |
+| `tools/drep-curated.json` | Hand-maintained Japanese labels and categories |
+| `.github/workflows/drep-snapshot.yml` | Daily at 21:10 UTC (06:10 JST), plus manual dispatch |
 
-手元で作り直す場合:
+Rebuild locally:
 
 ```bash
 DREP_OUT=drep-snapshot.json python tools/build-drep-snapshot.py
 DREP_OUT=drep-snapshot.json python tools/check-drep-snapshot.py
 ```
 
-## ライセンス / 免責
+Useful environment variables: `DREP_TOP_N` (0 = all active DReps, the default),
+`DREP_EPOCH_WINDOW` (epochs of history, default 75), `DREP_OUT`, `DREP_PAUSE`.
 
-数字は Koios 経由のオンチェーンデータをそのまま集計したもので、投資助言でも
-委任先の推奨でもない。判断の材料として使うこと。
+## Disclaimer
+
+These figures are on-chain data aggregated as-is. They are not investment advice and not a
+recommendation of any DRep. Use them as material for your own judgement.

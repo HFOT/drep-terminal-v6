@@ -56,7 +56,14 @@ jobs:
           git add drep-snapshot.json
           if git diff --cached --quiet; then
             echo 'no change'
-          else
-            git commit -m "chore: refresh DRep snapshot ($(date -u +%Y-%m-%d))"
-            git push
+            exit 0
           fi
+          git commit -m "chore: refresh DRep snapshot ($(date -u +%Y-%m-%d))"
+          # 実行中に main が進んでいると push が弾かれるので rebase して再試行する。
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push && exit 0
+            echo "push retry $i"
+            sleep 5
+          done
+          echo 'push failed after retries' >&2
+          exit 1
