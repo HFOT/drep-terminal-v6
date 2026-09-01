@@ -988,7 +988,25 @@ var I18N = {
   'st.noData':       {en:'no data',          ja:'データなし'},
   'epoch.snapshot':  {en:'snapshot',         ja:'スナップショット'},
   'epoch.embedded':  {en:'embedded data',    ja:'埋め込みデータ'},
-  'sel.prompt':      {en:'Select a DRep',    ja:'DRepを選択'}
+  'sel.prompt':      {en:'Select a DRep',    ja:'DRepを選択'},
+  'agg.drepCount':   {en:'DReps',            ja:'DRep数'},
+  'agg.delegators':  {en:'Delegators (+)',   ja:'委任者(+)'},
+  'agg.chgEp':       {en:'Change / epoch',   ja:'変化/Ep'},
+  'agg.topvp':       {en:'Top VP',           ja:'TOP VP'},
+  'agg.participation':{en:'Participation',   ja:'参加率'},
+  'unit.count':      {en:'',                 ja:' 名'},
+  'nk.control':      {en:'control 51%',      ja:'51%支配'},
+  'part.title':      {en:'Governance participation', ja:'ガバナンス参加率'},
+  'part.formula':    {en:'DRep delegation / active stake', ja:'DRep委任 / アクティブステーク'},
+  'part.drepVp':     {en:'Delegated to DReps', ja:'DRep委任量'},
+  'part.activeStake':{en:'Active stake',     ja:'アクティブSK'},
+  'part.circShare':  {en:'vs circulating',   ja:'流通量比'},
+  'part.estimate':   {en:'est.',             ja:'推算'},
+  'part.note':       {en:'Active stake = total delegated to stake pools (the governance electorate).',
+                      ja:'※ アクティブSK = ステークプール委任済み総量（ガバナンス有権者母数）'},
+  'flow.in':         {en:'Inflow TOP4',      ja:'流入 TOP4'},
+  'flow.out':        {en:'Outflow TOP4',     ja:'流出 TOP4'},
+  'donut.coverage':  {en:'coverage',         ja:'カバレッジ'}
 };
 
 var _lang = 'en';
@@ -1656,11 +1674,11 @@ function updateOvTicker(){
   }
 
   // ラベル変更
-  var lblOv={tkRLbl:'DRep数',tkDLbl:'委任者(+)',tkCLbl:'変化/Ep',tkHLbl:'TOP VP',tkFLbl:'参加率'};
+  var lblOv={tkRLbl:t('agg.drepCount'),tkDLbl:t('agg.delegators'),tkCLbl:t('agg.chgEp'),tkHLbl:t('agg.topvp'),tkFLbl:t('agg.participation')};
   Object.keys(lblOv).forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=lblOv[id];});
 
   // 値セット
-  document.getElementById('tkR').textContent=activeCnt+' 名';
+  document.getElementById('tkR').textContent=activeCnt+t('unit.count');
   document.getElementById('tkD').textContent=totalDel>0?fn(totalDel)+'+':'—';
   var ceEl=document.getElementById('tkC');
   ceEl.textContent=(chgPct>=0?'+':'')+chgPct.toFixed(2)+'%';
@@ -1675,16 +1693,7 @@ function updateOvTicker(){
     tkFEl.className = 'tsv '+(pctNow>30?'up':pctNow>15?'':'dn');
   }
 
-  // Nakamoto
-  var nkwEl=document.getElementById('nkw');
-  if(nkwEl){
-    var sorted2=DREPS.slice().sort(function(a,b){return(b.latest_vp||0)-(a.latest_vp||0);});
-    var total2=sorted2.reduce(function(s,d){return s+(d.latest_vp||0);},0);
-    var nak=0,cum2=0;
-    for(var i=0;i<sorted2.length;i++){cum2+=(sorted2[i].latest_vp||0);nak++;if(cum2>=total2*0.51)break;}
-    nkwEl.style.display='flex';
-    nkwEl.textContent='∑ Nakamoto '+nak+' · 51%支配';
-  }
+  renderNakamotoBadge();
 }
 
 // ============================================================
@@ -2099,7 +2108,9 @@ function renderOvTopList(){
   var total = DREPS.reduce(function(a,d){ return a+(d.latest_vp||0); }, 0) || 1;
 
   sorted.forEach(function(d, i){
-    var nm  = d.name_ja || d.name || String(d.id).slice(0,14);
+    var nm  = (_lang === 'ja')
+      ? (d.name_ja || d.name || String(d.id).slice(0,14))
+      : (d.name || d.name_ja || String(d.id).slice(0,14));
     var vp  = d.latest_vp || 0;
     var pct = vp/total*100;
     var del = (d.delegators != null) ? Number(d.delegators).toLocaleString() : '—';
@@ -2234,15 +2245,15 @@ function renderOvParticipation(){
   var pctCirc = circM     ? (totalVP / circM      * 100) : 0;
 
   var barColor = pctSK > 30 ? '#00d97e' : pctSK > 15 ? '#ff9f0a' : '#ff6b6b';
-  var estNote  = isLive ? '' : '<span style="font-size:8px;color:var(--text4);margin-left:3px">推算</span>';
+  var estNote  = isLive ? '' : '<span style="font-size:8px;color:var(--text4);margin-left:3px">'+t('part.estimate')+'</span>';
 
   el.innerHTML =
     '<div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.4px;text-transform:uppercase;margin-bottom:10px">'
-      +'ガバナンス参加率</div>'
+      +t('part.title')+'</div>'
     // メイン参加率 + バー
     +'<div style="margin-bottom:10px">'
       +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'
-        +'<span style="font-size:9px;color:var(--text3)">DRep委任 / アクティブステーク'+estNote+'</span>'
+        +'<span style="font-size:9px;color:var(--text3)">'+t('part.formula')+estNote+'</span>'
         +'<span style="font-size:22px;font-weight:700;color:'+barColor+';font-family:IBM Plex Mono,monospace;line-height:1">'+pctSK.toFixed(1)+'%</span>'
       +'</div>'
       +'<div style="height:8px;background:var(--surface-sub);border-radius:4px;overflow:hidden">'
@@ -2251,11 +2262,11 @@ function renderOvParticipation(){
     +'</div>'
     // 3列数字
     +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">'
-      +_ovPBox('DRep委任量', (totalVP/1000).toFixed(2)+'B₳', '#7c7ce8')
-      +_ovPBox('アクティブSK'+(isLive?'':' ⊕'), (activeSK/1000).toFixed(1)+'B₳', 'var(--text2)')
-      +_ovPBox('流通量比', pctCirc.toFixed(1)+'%', 'var(--text3)')
+      +_ovPBox(t('part.drepVp'), (totalVP/1000).toFixed(2)+'B₳', '#7c7ce8')
+      +_ovPBox(t('part.activeStake')+(isLive?'':' ⊕'), (activeSK/1000).toFixed(1)+'B₳', 'var(--text2)')
+      +_ovPBox(t('part.circShare'), pctCirc.toFixed(1)+'%', 'var(--text3)')
     +'</div>'
-    +'<div style="margin-top:5px;font-size:8px;color:var(--text4)">※ アクティブSK = ステークプール委任済み総量（ガバナンス有権者母数）</div>';
+    +'<div style="margin-top:5px;font-size:8px;color:var(--text4)">'+t('part.note')+'</div>';
 }
 function _ovPBox(label, value, color){
   return '<div style="background:var(--surface-sub);border-radius:6px;padding:6px 8px">'
@@ -2331,7 +2342,7 @@ function drawOvDonut(){
   // Coverage note
   var totalVP=DREPS.reduce(function(s,d){return s+(d.latest_vp||0);},0);
   var cvgPct=totalVP?Math.round(agg.coveredVP/totalVP*100):0;
-  lg.innerHTML+='<div style="margin-top:6px;font-size:8px;color:var(--text4)">カバレッジ: '
+  lg.innerHTML+='<div style="margin-top:6px;font-size:8px;color:var(--text4)">'+t('donut.coverage')+': '
     +(Object.keys(DELSTATS).length)+'DRep / '+cvgPct+'%VP</div>';
 }
 
@@ -2363,9 +2374,9 @@ function renderOvFlow(){
       +'<div style="width:'+pct+'%;height:100%;background:'+(isUp?'#00d97e55':'#ff3b5c55')+';border-radius:2px"></div></div>'
       +'</div>';
   }
-  el.innerHTML='<div style="font-size:9px;color:#00d97e;font-weight:600;margin-bottom:4px">▲ 流入 TOP4</div>'
+  el.innerHTML='<div style="font-size:9px;color:#00d97e;font-weight:600;margin-bottom:4px">▲ '+t('flow.in')+'</div>'
     +gainers.map(row).join('')
-    +'<div style="font-size:9px;color:#ff3b5c;font-weight:600;margin:8px 0 4px">▼ 流出 TOP4</div>'
+    +'<div style="font-size:9px;color:#ff3b5c;font-weight:600;margin:8px 0 4px">▼ '+t('flow.out')+'</div>'
     +losers.map(row).join('');
 }
 
@@ -2402,6 +2413,32 @@ function renderOvConc(){
     +'</div>'
     +'<div style="font-size:8px;color:var(--text4);margin-top:4px">'+t('conc.nakaHint')+'</div>'
     + (SNAP_TOTALS ? _ovDenomNote(total, loadedSum) : '');
+}
+
+// Nakamoto 係数と Top12 集中度をここ 1 箇所で計算する。
+// 分母はスナップショットの「実名DRep合計」を優先し、無ければ読み込めた DRep の合計。
+// 読み込めた分だけを分母にすると母数が小さいぶん集中度が過大に出る。
+// 閾値は 51% (過半数の支配に必要な人数)。
+function computeConcentration(){
+  var sorted = DREPS.slice().sort(function(a,b){ return (b.latest_vp||0)-(a.latest_vp||0); });
+  var loaded = sorted.reduce(function(a,d){ return a+(d.latest_vp||0); }, 0);
+  var total  = (typeof SNAP_TOTALS !== 'undefined' && SNAP_TOTALS && SNAP_TOTALS.named_total_m)
+    ? SNAP_TOTALS.named_total_m : loaded;
+  if(!total) return null;
+  var cum = 0, nak = 0;
+  for(var i=0;i<sorted.length;i++){
+    cum += (sorted[i].latest_vp||0); nak++;
+    if(cum >= total*0.51) break;
+  }
+  var t12 = sorted.slice(0,12).reduce(function(a,d){ return a+(d.latest_vp||0); }, 0)/total*100;
+  return { nakamoto: nak, top12: t12, total: total, loaded: loaded };
+}
+function renderNakamotoBadge(){
+  var c = computeConcentration();
+  if(!c) return;
+  var txt = '\u2211 Nakamoto ' + c.nakamoto + ' \u00b7 Top12=' + c.top12.toFixed(1) + '%VP';
+  var els = document.querySelectorAll('.nkw');
+  for(var i=0;i<els.length;i++){ els[i].style.display='flex'; els[i].textContent = txt; }
 }
 
 // 分母の内訳。数字がどこから来ているかを画面に出しておく。
@@ -5201,15 +5238,7 @@ async function _liveLoadOnce(opts){
           DREPS.forEach(function(d,i){d.rank=i+1;});
           if(typeof renderMP==='function') renderMP();
           if(sel){ sel=DREPS.find(function(d){return d.id===sel.id;})||sel; updateTicker(); }
-          // Nakamoto
-          var totalVP=DREPS.reduce(function(s,d){return s+(d.latest_vp||0);},0);
-          var cum2=0,nak2=0;
-          var srt2=DREPS.slice().sort(function(a,b){return (b.latest_vp||0)-(a.latest_vp||0);});
-          for(var ni2=0;ni2<srt2.length;ni2++){cum2+=(srt2[ni2].latest_vp||0);nak2++;if(cum2>=totalVP*0.5)break;}
-          var t12b=srt2.slice(0,12).reduce(function(s,d){return s+(d.latest_vp||0);},0)/totalVP*100;
-          document.querySelectorAll('.nkw').forEach(function(el){
-            el.textContent='⚠ Nakamoto '+nak2+' · Top12='+t12b.toFixed(1)+'%VP';
-          });
+          renderNakamotoBadge();
           var epochEl=document.getElementById('epochText');
           if(epochEl && c.epochText) epochEl.textContent=c.epochText;
           // KOIOS_BASEをセット（fetchDelegators等で必要）
@@ -5408,14 +5437,7 @@ async function _liveLoadOnce(opts){
     var totalVP=DREPS.reduce(function(s,d){return s+(d.latest_vp||0);},0);
     EXTRA.total_vp[epStr]=parseFloat(totalVP.toFixed(3));
 
-    // Nakamoto
-    var cum=0,nak=0;
-    var srt=DREPS.slice().sort(function(a,b){return (b.latest_vp||0)-(a.latest_vp||0);});
-    for(var ni=0;ni<srt.length;ni++){cum+=(srt[ni].latest_vp||0);nak++;if(cum>=totalVP*0.5)break;}
-    var t12=srt.slice(0,12).reduce(function(s,d){return s+(d.latest_vp||0);},0)/totalVP*100;
-    document.querySelectorAll('.nkw').forEach(function(el){
-      el.textContent='⚠ Nakamoto '+nak+' · Top12='+t12.toFixed(1)+'%VP';
-    });
+    renderNakamotoBadge();
 
     if(typeof sel!=='undefined'&&sel){
       sel=DREPS.find(function(d){return d.id===sel.id;})||sel;
@@ -5491,6 +5513,15 @@ async function loadSnapshot(){
   snap.epochs.forEach(function(e){ EPOCHS.push(String(e)); });
   DREPS.splice(0, DREPS.length);
   snap.dreps.forEach(function(d){ DREPS.push(d); });
+  // 総量は描画より前に確定させる。後回しにすると Nakamoto 係数などが読み込めた分だけを分母にしてしまう。
+  SNAP_TOTALS = snap.totals || null;
+  SNAP_META   = { source: snap.source || null, generated_at: snap.generated_at || '', epoch: snapLast };
+  if(SNAP_TOTALS){
+    // 実行時に Koios を叩けない環境 (静的ホスティング) でも参加率を正しく出す
+    if(SNAP_TOTALS.active_stake_m) GOVERNANCE_STATS.active_stake_m = SNAP_TOTALS.active_stake_m;
+    if(SNAP_TOTALS.circulation_m)  GOVERNANCE_STATS.circ_m         = SNAP_TOTALS.circulation_m;
+    if(SNAP_TOTALS.active_stake_m) GOVERNANCE_STATS.loaded = true;
+  }
   if(sel) sel = DREPS.find(function(d){ return d.id===sel.id; }) || null;
 
   var epEl = document.getElementById('epochText');
@@ -5498,16 +5529,7 @@ async function loadSnapshot(){
     epEl.textContent = 'Epoch ' + snapLast + ' · ' + t('epoch.snapshot') + ' ' + String(snap.generated_at||'').slice(0,10);
   }
   // 集中度表示もスナップショットの数字で引き直す
-  var totalVP = DREPS.reduce(function(a,d){ return a + (d.latest_vp||0); }, 0);
-  if(totalVP > 0){
-    var srt = DREPS.slice().sort(function(a,b){ return (b.latest_vp||0)-(a.latest_vp||0); });
-    var cum = 0, nak = 0;
-    for(var i=0;i<srt.length;i++){ cum += (srt[i].latest_vp||0); nak++; if(cum >= totalVP*0.5) break; }
-    var t12 = srt.slice(0,12).reduce(function(a,d){ return a+(d.latest_vp||0); },0)/totalVP*100;
-    document.querySelectorAll('.nkw').forEach(function(el){
-      el.textContent = '⚠ Nakamoto ' + nak + ' · Top12=' + t12.toFixed(1) + '%VP';
-    });
-  }
+  renderNakamotoBadge();
   try{
     if(typeof buildFlowEvents==='function') buildFlowEvents();
     if(typeof renderMP==='function')  renderMP();
@@ -5520,14 +5542,6 @@ async function loadSnapshot(){
     }
   }catch(e){ console.warn('[SNAP] re-render failed:', e); }
   setBar(t('epoch.snapshot') + ' — Epoch ' + snapLast + ' (' + String(snap.generated_at||'').slice(0,10) + ') · ' + DREPS.length + ' DReps', '#4a8fd4');
-  SNAP_TOTALS = snap.totals || null;
-  SNAP_META   = { source: snap.source || null, generated_at: snap.generated_at || '', epoch: snapLast };
-  if(SNAP_TOTALS){
-    // 実行時に Koios を叩けない環境 (静的ホスティング) でも参加率を正しく出す
-    if(SNAP_TOTALS.active_stake_m) GOVERNANCE_STATS.active_stake_m = SNAP_TOTALS.active_stake_m;
-    if(SNAP_TOTALS.circulation_m)  GOVERNANCE_STATS.circ_m         = SNAP_TOTALS.circulation_m;
-    if(SNAP_TOTALS.active_stake_m) GOVERNANCE_STATS.loaded = true;
-  }
   _snapLoaded = true;
   console.log('[SNAP] epoch', snapLast, DREPS.length, 'dreps, generated', snap.generated_at);
   return true;
