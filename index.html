@@ -3121,20 +3121,71 @@ function renderCatalystPanel(drepId){
 // 右カラム (DRep Data) の表示切替。
 // Catalyst 詳細や日本DRepプロフィールを出すときだけ開き、
 // 中身が無いときは畳んでチャート側に幅を渡す。
-// DRep 評価レポートを出してよい環境か。
+// 右カラム「DRep Data」を出してよい環境か。
 //
-// このパネルは実在の個人・団体に対する採点と判定 (利益相反度 CRITICAL、
-// 委任健全性 28点、タイプ分類など) を含む。算出根拠は書いてあるが、
-// 閾値も重み付けも当方の主観であり、オンチェーンの事実ではない。
-// 公開ページで名指しの評価として出すものではないので、
-// CIGNAL OS 内 (Tauri) とローカル確認時に限って表示する。
-function _showDrepReport(){
+// ここには実在の個人・団体に対する採点と判定 (利益相反度 CRITICAL、
+// 委任健全性 28点、タイプ分類など) や、Catalyst 調達額を紐づけた
+// 個別プロファイルが入る。算出根拠は書いてあるが、閾値も重み付けも
+// 当方の主観であってオンチェーンの事実ではない。公開ページで
+// 名指しで出すものではないため、CIGNAL OS 内 (Tauri) と
+// ローカル確認時に限って表示する。
+function _showDrepDataPanel(){
   try {
     if(window.__TAURI__) return true;
     var h = location.hostname;
     return h === 'localhost' || h === '127.0.0.1' || h === '';
   } catch(e){ return false; }
 }
+
+// チャートと委任者内訳を左右に並べるか上下に積むかを幅で決める。
+// 左右に並べるには両方が成立するだけの横幅が要る。狭いときに無理に
+// 並べるとチャートが 150px 程度まで潰れて読めなくなる。
+var SPLIT_ROW_MIN = 760;   // chart-col がこの幅を超えたら左右
+
+function _applySplitOrientation(){
+  var cs = document.querySelector('.chart-split');
+  var cz = document.getElementById('chartZone');
+  var dz = document.getElementById('delegatorZone');
+  var sh = document.getElementById('splitHandle');
+  var cc = document.querySelector('.chart-col');
+  if(!cs || !cz || !dz) return;
+
+  var w = cc ? cc.getBoundingClientRect().width : 0;
+  var row = w >= SPLIT_ROW_MIN;
+  if(cs.dataset.dir === (row ? 'row' : 'col')) return;   // 変化なしなら触らない
+  cs.dataset.dir = row ? 'row' : 'col';
+
+  cs.style.flexDirection = row ? 'row' : 'column';
+
+  // ドラッグで付いた inline 寸法を捨てて比率に戻す
+  cz.style.width = ''; cz.style.height = '';
+  dz.style.width = ''; dz.style.height = '';
+  cz.style.flex = row ? '3' : '2';
+  dz.style.flex = row ? '2' : '1';
+
+  dz.style.minWidth   = row ? '360px' : '0';
+  dz.style.borderLeft = row ? '1px solid var(--hairline-soft)' : 'none';
+  dz.style.borderTop  = row ? 'none' : '1px solid var(--hairline-soft)';
+
+  if(sh){
+    sh.style.width  = row ? '6px' : 'auto';
+    sh.style.height = row ? 'auto' : '6px';
+    sh.style.cursor = row ? 'col-resize' : 'row-resize';
+    sh.style.borderLeft   = row ? '1px solid var(--hairline-soft)' : 'none';
+    sh.style.borderRight  = row ? '1px solid var(--hairline-soft)' : 'none';
+    sh.style.borderTop    = row ? 'none' : '1px solid var(--hairline-soft)';
+    sh.style.borderBottom = row ? 'none' : '1px solid var(--hairline-soft)';
+    var grip = sh.querySelector('.split-grip');
+    if(grip){
+      grip.style.width  = row ? '2px' : '40px';
+      grip.style.height = row ? '40px' : '2px';
+    }
+  }
+  if(typeof drawAll === 'function'){ try { drawAll(); } catch(e){} }
+}
+window.addEventListener('resize', function(){
+  if(typeof _applySplitOrientation === 'function') _applySplitOrientation();
+});
 
 function _setFormColVisible(on){
   var fc = document.getElementById('formCol');
@@ -3148,11 +3199,10 @@ function _setFormColVisible(on){
   // 関わらず 34% しか使えず、左右分割にしたチャート側が潰れる。常に伸ばす。
   var cc = document.querySelector('.chart-col');
   if(cc) cc.style.flex = '1 1 auto';
-  // 分割ドラッグで付いた inline 寸法を消して比率に戻す
-  var cz = document.getElementById('chartZone');
-  var dz = document.getElementById('delegatorZone');
-  if(cz){ cz.style.width = ''; cz.style.flex = '3'; }
-  if(dz){ dz.style.width = ''; dz.style.flex = '2'; }
+  // 右カラムの有無で chart-col の幅が変わるので、向きを取り直す
+  var cs = document.querySelector('.chart-split');
+  if(cs) cs.dataset.dir = '';   // 強制的に再適用させる
+  _applySplitOrientation();
 }
 
 function renderRightCol(){
@@ -3873,10 +3923,13 @@ function renderRightCol(){
   var _dzHtml = buildDRepHtml(false);
   if(_dzEl){ _dzEl.style.cssText='flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0'; _dzEl.innerHTML=_dzHtml; }
 
-  if((isJP || (catData && spoData)) && _showDrepReport()){
+  if(!_showDrepDataPanel()){
+    // ── 公開版: 右カラムは一切出さない ──
+    // 委任者内訳と委任フローは上で左パネルに描いてあるので情報は落ちない。
+    el.innerHTML = '';
+    _setFormColVisible(false);
+  } else if(isJP || (catData && spoData)){
     // ── 日本DRep / フルプロファイル: タイルグリッド全幅 ──
-    // 公開版では出さない (_showDrepReport 参照)。その場合は下の
-    // Catalyst 詳細 (事実ベース) に落ちるか、右カラムごと畳まれる。
     _setFormColVisible(true);
     el.setAttribute('style','padding:0;overflow:hidden;flex:1;display:flex;flex-direction:column');
     el.innerHTML = buildProfileHtml();
@@ -5635,12 +5688,18 @@ async function startLiveLoad(){
     return [document.getElementById('chartZone'),
             document.getElementById('delegatorZone')];
   }
+  function isRow(){
+    var cs=document.querySelector('.chart-split');
+    return !cs || cs.dataset.dir !== 'col';
+  }
   handle.addEventListener('mousedown',function(e){
     var z=zones();
     if(!z[0]||!z[1])return;
-    splitDrag=true; splitStartX=e.clientX;
-    startChartW=z[0].offsetWidth; startZoneW=z[1].offsetWidth;
-    document.body.style.cursor='col-resize';
+    splitDrag=true;
+    splitStartX = isRow() ? e.clientX : e.clientY;
+    startChartW = isRow() ? z[0].offsetWidth : z[0].offsetHeight;
+    startZoneW  = isRow() ? z[1].offsetWidth : z[1].offsetHeight;
+    document.body.style.cursor = isRow() ? 'col-resize' : 'row-resize';
     document.body.style.userSelect='none';
     e.preventDefault();
   });
@@ -5648,11 +5707,13 @@ async function startLiveLoad(){
     if(!splitDrag)return;
     var z=zones();
     if(!z[0]||!z[1])return;
-    var dx=e.clientX-splitStartX;
-    var newCW=Math.max(260, startChartW+dx);
-    var newZW=Math.max(320, startZoneW-dx);
-    z[0].style.flex='none'; z[0].style.width=newCW+'px';
-    z[1].style.flex='none'; z[1].style.width=newZW+'px';
+    var row=isRow();
+    var d=(row ? e.clientX : e.clientY)-splitStartX;
+    var a=Math.max(row?260:80, startChartW+d);
+    var b=Math.max(row?320:60, startZoneW-d);
+    z[0].style.flex='none'; z[1].style.flex='none';
+    if(row){ z[0].style.width=a+'px'; z[1].style.width=b+'px'; }
+    else   { z[0].style.height=a+'px'; z[1].style.height=b+'px'; }
     drawAll();
   });
   document.addEventListener('mouseup',function(){
