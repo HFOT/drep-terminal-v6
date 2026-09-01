@@ -3121,13 +3121,38 @@ function renderCatalystPanel(drepId){
 // 右カラム (DRep Data) の表示切替。
 // Catalyst 詳細や日本DRepプロフィールを出すときだけ開き、
 // 中身が無いときは畳んでチャート側に幅を渡す。
+// DRep 評価レポートを出してよい環境か。
+//
+// このパネルは実在の個人・団体に対する採点と判定 (利益相反度 CRITICAL、
+// 委任健全性 28点、タイプ分類など) を含む。算出根拠は書いてあるが、
+// 閾値も重み付けも当方の主観であり、オンチェーンの事実ではない。
+// 公開ページで名指しの評価として出すものではないので、
+// CIGNAL OS 内 (Tauri) とローカル確認時に限って表示する。
+function _showDrepReport(){
+  try {
+    if(window.__TAURI__) return true;
+    var h = location.hostname;
+    return h === 'localhost' || h === '127.0.0.1' || h === '';
+  } catch(e){ return false; }
+}
+
 function _setFormColVisible(on){
   var fc = document.getElementById('formCol');
-  if(fc) fc.style.display = on ? '' : 'none';
-  // .chart-col は flex:0 0 34% で固定されているため、右カラムを畳んでも
-  // そのままでは伸びない。畳んだぶんの幅をチャート側に渡す。
+  if(fc){
+    fc.style.display = on ? '' : 'none';
+    // 出すときも幅を上限つきに抑える。既定の flex:1 1 0% だと画面の半分を
+    // 持っていき、左のチャートと委任者内訳が両方潰れる。
+    fc.style.flex = on ? '0 0 clamp(320px, 32%, 520px)' : '';
+  }
+  // .chart-col は CSS で flex:0 0 34% 固定。そのままだと右カラムの有無に
+  // 関わらず 34% しか使えず、左右分割にしたチャート側が潰れる。常に伸ばす。
   var cc = document.querySelector('.chart-col');
-  if(cc) cc.style.flex = on ? '' : '1 1 auto';
+  if(cc) cc.style.flex = '1 1 auto';
+  // 分割ドラッグで付いた inline 寸法を消して比率に戻す
+  var cz = document.getElementById('chartZone');
+  var dz = document.getElementById('delegatorZone');
+  if(cz){ cz.style.width = ''; cz.style.flex = '3'; }
+  if(dz){ dz.style.width = ''; dz.style.flex = '2'; }
 }
 
 function renderRightCol(){
@@ -3848,8 +3873,10 @@ function renderRightCol(){
   var _dzHtml = buildDRepHtml(false);
   if(_dzEl){ _dzEl.style.cssText='flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0'; _dzEl.innerHTML=_dzHtml; }
 
-  if(isJP || (catData && spoData)){
+  if((isJP || (catData && spoData)) && _showDrepReport()){
     // ── 日本DRep / フルプロファイル: タイルグリッド全幅 ──
+    // 公開版では出さない (_showDrepReport 参照)。その場合は下の
+    // Catalyst 詳細 (事実ベース) に落ちるか、右カラムごと畳まれる。
     _setFormColVisible(true);
     el.setAttribute('style','padding:0;overflow:hidden;flex:1;display:flex;flex-direction:column');
     el.innerHTML = buildProfileHtml();
