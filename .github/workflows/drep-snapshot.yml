@@ -28,7 +28,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60   # 全 active DRep (約370件) を取るため
 
     steps:
       - uses: actions/checkout@v4

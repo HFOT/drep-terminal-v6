@@ -27,7 +27,11 @@ import urllib.error
 from datetime import datetime, timezone
 
 KOIOS = 'https://api.koios.rest/api/v1'
-TOP_N = int(os.environ.get('DREP_TOP_N', '50'))
+# 事前定義 DRep。実在の代表者ではないが投票力の大半を占めるので、
+# 集中度の分母を正しく取るために別枠で集計する。
+PREDEFINED = ['drep_always_abstain', 'drep_always_no_confidence']
+# 0 = アクティブな DRep を全件。上位だけだと集中度の分母が過小になる。
+TOP_N = int(os.environ.get('DREP_TOP_N', '0'))
 EPOCH_WINDOW = int(os.environ.get('DREP_EPOCH_WINDOW', '75'))
 PAUSE = float(os.environ.get('DREP_PAUSE', '0.15'))
 UA = 'cignal-drep-snapshot/1.0 (+https://github.com/HFOT)'
@@ -69,24 +73,6 @@ def api(url, data=None, headers=None, tries=3, timeout=90):
             if i < tries - 1:
                 time.sleep(1.5 * (2 ** i))
     log('  ! failed: ' + url[:90] + ' -> ' + repr(last))
-    return None
-
-
-def count_only(url):
-    """PostgREST の Content-Range から件数だけ取る (本体は 1 行しか転送しない)。"""
-    cr = ''
-    try:
-        with _open(url, headers={'Prefer': 'count=exact', 'Range': '0-0'}, timeout=90) as r:
-            cr = r.headers.get('Content-Range') or ''
-    except urllib.error.HTTPError as e:
-        if e.headers:
-            cr = e.headers.get('Content-Range') or ''
-    except Exception:
-        return None
-    if '/' in cr:
-        tail = cr.split('/')[-1].strip()
-        if tail.isdigit():
-            return int(tail)
     return None
 
 
@@ -179,10 +165,35 @@ def main():
         vp = lovelace_to_m(d.get('amount') or 0)
         if not vp or vp <= 0:
             continue
-        active.append({'id': d['drep_id'], 'vp': vp, 'meta_url': d.get('meta_url') or ''})
+        active.append({'id': d['drep_id'], 'vp': vp,
+                       'meta_url': d.get('meta_url') or '',
+                       'delegators': d.get('live_delegator_count')})
     active.sort(key=lambda x: -x['vp'])
-    top = active[:TOP_N]
-    log('active dreps: %d  -> top %d' % (len(active), len(top)))
+    top = active[:TOP_N] if TOP_N > 0 else active
+    log('active dreps: %d  -> taking %d' % (len(active), len(top)))
+
+    # ── 総量 (集中度の分母) ──
+    totals = {}
+    summ = api(KOIOS + '/drep_epoch_summary?_epoch_no=%d' % epoch)
+    if summ:
+        totals['drep_total_m'] = lovelace_to_m(summ[0].get('amount') or 0)
+        totals['drep_count'] = summ[0].get('dreps')
+    pre = api(KOIOS + '/drep_info', data={'_drep_ids': PREDEFINED}) or []
+    for d in pre:
+        key = 'abstain' if 'abstain' in d.get('drep_id','') else 'no_confidence'
+        totals[key + '_m'] = lovelace_to_m(d.get('amount') or 0)
+        totals[key + '_delegators'] = d.get('live_delegator_count')
+    if totals.get('drep_total_m') is not None:
+        totals['named_total_m'] = round(
+            totals['drep_total_m'] - (totals.get('abstain_m') or 0)
+            - (totals.get('no_confidence_m') or 0), 3)
+    ei = api(KOIOS + '/epoch_info?_epoch_no=%d' % epoch)
+    if ei and ei[0].get('active_stake'):
+        totals['active_stake_m'] = lovelace_to_m(ei[0]['active_stake'])
+    tt = api(KOIOS + '/totals?_epoch_no=%d' % epoch)
+    if tt and tt[0].get('circulation'):
+        totals['circulation_m'] = lovelace_to_m(tt[0]['circulation'])
+    log('totals: ' + json.dumps(totals))
 
     epochs = [str(e) for e in range(epoch - EPOCH_WINDOW + 1, epoch + 1)]
     want = set(epochs)
@@ -209,8 +220,7 @@ def main():
         if prev and latest is not None and prev > 0:
             chg = round((latest - prev) / prev * 100, 2)
 
-        cnt = count_only(KOIOS + '/drep_delegators?_drep_id=' + did)
-        time.sleep(PAUSE)
+        cnt = d.get('delegators')
 
         name, image = '', ''
         if d['meta_url']:
@@ -246,11 +256,23 @@ def main():
     out = {
         'generated_at': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
         'epoch': epoch,
-        'source': 'koios',
+        'source': {
+            'name': 'Koios',
+            'url': 'https://koios.rest/',
+            'api': KOIOS,
+            'endpoints': ['/tip', '/drep_list', '/drep_info', '/drep_history',
+                          '/drep_epoch_summary', '/epoch_info', '/totals'],
+            'note': 'DRep metadata (names, images) is fetched from each DRep CIP-119 meta_url.',
+        },
+        'totals': totals,
         'epochs': epochs,
         'dreps': dreps,
     }
-    os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    # OUT がカレント直下のファイル名だけだと dirname が空文字になり、
+    # makedirs('') が FileNotFoundError を投げる。空のときは作らない。
+    outdir = os.path.dirname(OUT)
+    if outdir:
+        os.makedirs(outdir, exist_ok=True)
     with open(OUT, 'w', encoding='utf-8') as f:
         json.dump(out, f, ensure_ascii=False, separators=(',', ':'))
     log('wrote %s (%d bytes, epoch %d, %d dreps)'
