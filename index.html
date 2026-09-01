@@ -3,10 +3,47 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DRep Governance Terminal</title>
+<meta name="description" content="Read Cardano's DRep landscape from verifiable numbers: voting power, concentration, Nakamoto coefficient and delegation flow. Data from Koios, refreshed daily.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230e0f12'/%3E%3Crect x='6.4' y='6' width='3.2' height='20' rx='1.6' fill='%2330c46a'/%3E%3Cpath d='M12.2 6.4 A10.2 10.2 0 0 1 12.2 25.6' stroke='%2330c46a' stroke-width='3.2' fill='none' stroke-linecap='round'/%3E%3Cpath d='M12.2 11 A5.4 5.4 0 0 1 12.2 21' stroke='%2330c46a' stroke-width='2.6' fill='none' stroke-linecap='round' opacity='0.55'/%3E%3Ccircle cx='12.6' cy='16' r='1.8' fill='%2330c46a'/%3E%3C/svg%3E">
+<meta property="og:title" content="DRep Governance Terminal">
+<meta property="og:description" content="Voting power, concentration and delegation flow across Cardano DReps. Koios data, refreshed daily.">
+<meta property="og:type" content="website">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
+
+/* ── 起動スプラッシュ ──
+   最初の 1 フレームから暗い画面を出し、実データが載るまでを見せる。
+   進捗は演出ではなく実際の読み込み段階に紐づけてある。 */
+#boot{position:fixed;inset:0;z-index:99999;background:#0b0c0f;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  transition:opacity .45s ease, visibility .45s ease;}
+#boot.gone{opacity:0;visibility:hidden;pointer-events:none;}
+#boot .bt-mark{opacity:0;transform:translateY(6px);animation:btIn .5s .05s ease forwards;}
+#boot .bt-word{margin-top:16px;font-family:Inter,system-ui,sans-serif;font-size:19px;
+  font-weight:600;letter-spacing:-0.3px;color:#e8eaed;opacity:0;
+  animation:btIn .5s .16s ease forwards;}
+#boot .bt-sub{margin-top:7px;font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:.16em;text-transform:uppercase;color:#5c6470;opacity:0;
+  animation:btIn .5s .26s ease forwards;}
+#boot .bt-track{margin-top:26px;width:196px;height:2px;border-radius:2px;
+  background:rgba(255,255,255,.07);overflow:hidden;opacity:0;
+  animation:btIn .5s .34s ease forwards;}
+#boot .bt-fill{height:100%;width:8%;border-radius:2px;
+  background:linear-gradient(90deg,#30c46a,#4fe0a0);
+  transition:width .5s cubic-bezier(.22,.9,.3,1);}
+#boot .bt-status{margin-top:12px;height:12px;font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;letter-spacing:.06em;color:#4b535e;opacity:0;
+  animation:btIn .5s .34s ease forwards;}
+@keyframes btIn{to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion:reduce){
+  #boot .bt-mark,#boot .bt-word,#boot .bt-sub,#boot .bt-track,#boot .bt-status{
+    animation:none;opacity:1;transform:none;}
+  #boot .bt-fill{transition:none;}
+}
+
 
 :root{
   /* ── Aurora surface tokens ── */
@@ -676,12 +713,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 </style>
 </head>
 <body>
+<div id="boot"><div class="bt-mark"><svg width="46" height="46" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="5.6" y="5" width="3.4" height="22" rx="1.7" fill="#30c46a"/><path d="M11.6 5.4 A11.2 11.2 0 0 1 11.6 26.6" stroke="#30c46a" stroke-width="3.4" stroke-linecap="round"/><path d="M11.6 10.4 A5.9 5.9 0 0 1 11.6 21.6" stroke="#30c46a" stroke-width="2.8" stroke-linecap="round" opacity="0.55"/><circle cx="12.1" cy="16" r="1.9" fill="#30c46a"/></svg></div><div class="bt-word">DRep Terminal</div><div class="bt-sub">Cardano Governance</div><div class="bt-track"><div class="bt-fill" id="bootFill"></div></div><div class="bt-status" id="bootStatus">starting</div></div>
 
 <!-- HEADER — Aurora Topbar -->
 <nav class="nav">
   <div class="logo">
     <div style="display:flex;align-items:center;gap:8px">
-      <div style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#30c46a,#00a86b);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;box-shadow:0 2px 8px rgba(48,196,106,.25)">D</div>
+      <div style="width:24px;height:24px;border-radius:7px;background:linear-gradient(150deg,rgba(48,196,106,.16),rgba(0,168,107,.06));border:1px solid rgba(48,196,106,.28);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="5.6" y="5" width="3.4" height="22" rx="1.7" fill="#30c46a"/><path d="M11.6 5.4 A11.2 11.2 0 0 1 11.6 26.6" stroke="#30c46a" stroke-width="3.4" stroke-linecap="round"/><path d="M11.6 10.4 A5.9 5.9 0 0 1 11.6 21.6" stroke="#30c46a" stroke-width="2.8" stroke-linecap="round" opacity="0.55"/><circle cx="12.1" cy="16" r="1.9" fill="#30c46a"/></svg></div>
       <span style="font-size:14px;font-weight:600;color:var(--text);letter-spacing:-0.3px">DRep Terminal</span>
     </div>
   </div>
@@ -901,6 +939,32 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 </div>
 
 
+<script>
+/* 起動スプラッシュの進捗。演出ではなく実際の段階を出す。
+   万一どこかで固まっても閉じられるよう、上限時間で必ず消す。 */
+(function(){
+  var el = document.getElementById('boot');
+  if(!el) return;
+  var fill = document.getElementById('bootFill');
+  var st   = document.getElementById('bootStatus');
+  var done = false;
+  window.bootStep = function(pct, msg){
+    if(done) return;
+    if(fill && pct != null) fill.style.width = Math.max(0, Math.min(100, pct)) + '%';
+    if(st && msg) st.textContent = msg;
+  };
+  window.bootDone = function(msg){
+    if(done) return;
+    done = true;
+    if(fill) fill.style.width = '100%';
+    if(st && msg) st.textContent = msg;
+    setTimeout(function(){ el.classList.add('gone'); }, 260);
+    setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 900);
+  };
+  // 保険: 何があっても 7 秒で閉じる
+  setTimeout(function(){ window.bootDone(); }, 7000);
+})();
+</script>
 <script>
 /* ── 言語切替 (既定 EN / JP に切替可) ─────────────────────
    静的ラベルは data-i18n 属性、動的描画は t() 経由で引く。
@@ -5620,6 +5684,7 @@ var SNAP_TOTALS = null;    // Koios から取った epoch 全体の総量 (集�
 var SNAP_META   = null;    // 取得元・生成時刻
 async function loadSnapshot(){
   var snap = null;
+  if(window.bootStep) bootStep(28, 'fetching snapshot');
   try{
     var r = await fetch('drep-snapshot.json', {cache:'no-cache'});
     if(!r.ok) return false;
@@ -5673,6 +5738,7 @@ async function loadSnapshot(){
   }catch(e){ console.warn('[SNAP] re-render failed:', e); }
   setBar(t('epoch.snapshot') + ' — Epoch ' + snapLast + ' (' + String(snap.generated_at||'').slice(0,10) + ') · ' + DREPS.length + ' DReps', '#4a8fd4');
   _snapLoaded = true;
+  if(window.bootStep) bootStep(82, 'epoch ' + snapLast + ' \u00b7 ' + DREPS.length + ' dreps');
   console.log('[SNAP] epoch', snapLast, DREPS.length, 'dreps, generated', snap.generated_at);
   return true;
 }
@@ -5685,9 +5751,11 @@ async function startLiveLoad(){
   _liveStarted = true;
   document.addEventListener('DOMContentLoaded', async function(){
     // 個別 DRep 未選択の空画面ではなく、全体像から始める
+    if(window.bootStep) bootStep(14, 'preparing view');
     try { setMainPage('overview', document.getElementById('navOverview')); }
     catch(e){ console.warn('[INIT] overview:', e); }
     await loadSnapshot();   // まず同一オリジンの日次スナップショット
+    if(window.bootDone) bootDone(_snapLoaded ? 'ready' : 'using embedded data');
     runLiveLoad();          // そのうえでリアルタイム取得 (CIGNAL 内は Koios プロキシで通る)
     _liveStartAutoRefresh();
   });
