@@ -18,7 +18,7 @@ that is. It opens on the aggregate view rather than an empty screen.
 - Top DRep list → click through to an individual view (VP history, delegator mix, flow log)
 
 There is **no delegation simulator**. This is a place to read; actual delegation belongs
-in a wallet (Yoroi / Eternl / Lace) or GovTool.
+in a wallet (Eternl / Lace) or GovTool.
 
 ## Data
 
